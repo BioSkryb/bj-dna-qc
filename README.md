@@ -1,26 +1,87 @@
 
 # BJ-DNA-QC
 
-The BioSkryb BJ-DNA-QC pipeline evaluates the quality of the single-cell library and it provides several qc metrics to assess the quality of the sequencing reads. 
+The BioSkryb BJ-DNA-QC pipeline evaluates the quality of the single-cell library and it provides several qc metrics to assess the quality of the sequencing reads.
+
+# Running locally
+
+Following are instructions for running BJ-DNA-QC in a local Ubuntu 18.04 server
+
+## Install Java 11
+
+```
+sudo apt-get install default-jdk
+
+java -version
+#openjdk version "11.0.18" 2023-01-17
+#OpenJDK Runtime Environment (build 11.0.18+10-post-Ubuntu-0ubuntu118.04.1)
+#OpenJDK 64-Bit Server VM (build 11.0.18+10-post-Ubuntu-0ubuntu118.04.1, mixed mode, sharing)
+```
+
+## Install AWS CLI
+
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
+## Install Nextflow
+
+```
+wget -qO- https://get.nextflow.io | bash
+
+```
+
+## Install Docker
+
+```
+
+```
+
+## Download and Unzip Pipeline Repository
+```
+cd bj-dna-qc
+```
+
+## Sentieon License Setup
+
+The Sentieon license is based on a lightweight floating license server process running on one node, and serving licenses though TCP to all other nodes. Normally this license server is running in a special non-computing node on the cluster periphery that has unrestricted access to the outside world through HTTPS, and serves the licenses to the rest of the nodes in the cluster by listening to a specific TCP port that needs to be open within the cluster. The license server needs to have external https access to validate the license, while the computing nodes do not need to have access to the internet.
+
+Client will need to provide FQDN (hostname) or IP address of the machine that they would like to use to host the license server along with the port the license server will listen at to create a license file by Sentieon.
+
+Sentieon license server supports connection through the proxy server. Set the standard `http_proxy` environment before starting the license server.
+
+In order to run Sentieon software will need to start a Sentieon license server on eg. `b06x-pbs01.inet.xxxxxxxxx`; running the following command will setup the license server as a running daemon in your system:
+
+```
+export http_proxy=<proxy_server_name_and_port>
+<SENTIEON_DIR>/bin/sentieon licsrvr --start --log <LOCATION_OF_LOG_FILE> <LICENSE_FILE> 
+```
+To run Sentieon software in the computing nodes, will need to set an environmental variable to tell Sentieon software the location of the license server and port. This can be added to bash profile or to the scripts that will drive the pipelines:
+```
+export SENTIEON_LICENSE=b06x-pbs01.inet.xxxxxxxxxxxx:xxxx
+```
+
+## Test Pipeline Execution
 
 **Input Options**
 
 The input for the pipeline is fastq files. The input can be passed either directly as path to the input file directory or via a input.csv with a meta data.
 
 - **Reads Directory Input**: Use the `--reads` parameter to specify the path to a directory containing the input files. By default, this parameter is set to `null`. For example, to use fastq files from a specific directory, you would use: 
-`--reads 's3://bioskryb-data-share/BioSkryb-Testing-Data/genomics/homo_sapiens/GRCh38/illumina/fastq/small/*R{1,2}_001.fastq.gz'`
+`--reads 's3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/*R{1,2}_001.fastq.gz'`
 
 - **CSV Metadata Input**: Alternatively, you can use the `--input_csv` parameter to specify a CSV file containing metadata. This parameter is also `null` by default. The CSV file should have 6 columns: `biosampleName`, `sampleId`, `reads`, `readLength`, `read1` and `read2`. 
 The `biosampleName` column contains the name of the biosample, the `sampleId` column contains the sample name in Illumina specified name format, `reads` have the number of reads, `readLength` with length of the reads and `read1` and `read2` has the path to the input reads. For example:
 
 ```
 biosampleName,sampleId,reads,readLength,read1,read2
-DNAQC-test1-100reads,DNAQC-test1-100reads_S1_L001,100,76,s3://bioskryb-data-share/BioSkryb-Testing-Data/genomics/homo_sapiens/GRCh38/illumina/fastq/small/DNAQC-test1-100reads_S1_L001_R1_001.fastq.gz,s3://bioskryb-data-share/BioSkryb-Testing-Data/genomics/homo_sapiens/GRCh38/illumina/fastq/small/DNAQC-test1-100reads_S1_L001_R2_001.fastq.gz
-DNAQC-test2-1000reads,DNAQC-test2-1000reads_S2_L001,1000,76,s3://bioskryb-data-share/BioSkryb-Testing-Data/genomics/homo_sapiens/GRCh38/illumina/fastq/small/DNAQC-test2-1000reads_S2_L001_R1_001.fastq.gz,s3://bioskryb-data-share/BioSkryb-Testing-Data/genomics/homo_sapiens/GRCh38/illumina/fastq/small/DNAQC-test2-1000reads_S2_L001_R2_001.fastq.gzDNAQC-test1-100reads_S1_L001
+DNAQC-test1-100reads,DNAQC-test1-100reads_S1_L001,100,76,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R2_001.fastq.gz
+DNAQC-test2-1000reads,DNAQC-test2-1000reads_S2_L001,1000,76,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R2_001.fastq.gzDNAQC-test1-100reads_S1_L001
 ```
 
 **Optional Modules**
-
 
 This pipeline includes several optional modules. You can choose to include or exclude these modules by adjusting the following parameters:
 
@@ -32,13 +93,10 @@ This pipeline includes several optional modules. You can choose to include or ex
 
 **Outputs**
 
-
 The pipeline saves its output files in the designated "publish_dir" directory. The different QC metrics files are stored in the "secondary_analyses/metrics/<sample_name>/alignment_stats" subdirectory.
 
 
-**LOCAL USAGE**
-
-Pipeline uses dsl2 and have modularize the shared code into seperate utils repository (nf-biosrkyb-utils). The utils repository contains the modules/process independently written for each tool. The utils repository also contain subworkflows, and containers used across all the pipelines.
+**Command**
 
 example-
 
@@ -46,9 +104,8 @@ example-
 
 ```
 nextflow run main.nf \
-    -r master -latest -profile batch_dev \
-    --reads 's3://bioskryb-test-data/dnaseq/qc/smalltest/*R{1,2}_001.fastq.gz' \
-    --publish_dir 's3://bioskryb-genomics-workflows-analysis-dev/analysis/test'
+    --input_csv 'tests/data/inputs/input.csv' \
+    --publish_dir 'output/bj_dna_qc/'
 ```
 
 
@@ -107,87 +164,4 @@ Script Options: see nextflow.config
 
     --help              BOOL    Display help message
 
-```
-
-
-**nf-test**
-
-
-The BioSkryb BJ-DNA-QC nextflow pipeline run is tested using the nf-test framework.
-
-Installation:
-
-nf-test has the same requirements as Nextflow and can be used on POSIX compatible systems like Linux or OS X. You can install nf-test using the following command:
-```
-wget -qO- https://code.askimed.com/install/nf-test | bash
-```
-It will create the nf-test executable file in the current directory. Optionally, move the nf-test file to a directory accessible by your $PATH variable.
-
-Usage:
-
-```
-nf-test test
-```
-
-The nf-test for this repository is saved at tests/ folder.
-
-```
-    test("preseq_test") {
-        when {
-            params {
-                // define parameters here. Example: 
-                publish_dir = "${outputDir}/results"
-                timestamp = "test"
-            }
-        }
-
-        then {
-            assertAll(
-                
-                // Check if the workflow was successful
-                { assert workflow.success },
-
-                // Verify existence of the multiqc report HTML file
-                { 
-                    assert new File("${outputDir}/results_test/multiqc/multiqc_report.html").exists()
-                },
-
-                // Check for a match in the all metrics MQC text file
-                { 
-                    assert snapshot(path("${outputDir}/results_test/secondary_analyses/metrics/nf-preseq-pipeline_all_metrics_mqc.txt"))
-                        .match("all_metrics_mqc")
-                },
-
-                // Check for a match in the selected metrics MQC text file
-                { 
-                    assert snapshot(path("${outputDir}/results_test/secondary_analyses/metrics/nf-preseq-pipeline_selected_metrics_mqc.txt"))
-                        .match("selected_metrics_mqc")
-                },
-
-                // Verify existence of the fastp JSON file
-                { 
-                    assert new File("${outputDir}/results_test/primary_analyses/metrics/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64/fastp/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64_no_qc_fastp.json").exists()
-                },
-
-                // Check for a match in the kraken report text file
-                { 
-                    assert snapshot(path("${outputDir}/results_test/primary_analyses/metrics/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64/kraken2/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64_kraken2_report.txt"))
-                        .match("kraken_report")
-                },
-
-                // Verify existence of the qualimap HTML report
-                { 
-                    assert new File("${outputDir}/results_test/primary_analyses/metrics/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64/qualimap/QUALIMAP_BAMQC_WF_H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64/qualimapReport.html").exists()
-                },
-
-                // Check for a match in the Ginkgo segment summary text file
-                { 
-                    assert snapshot(path("${outputDir}/results_test/tertiary_analyses/cnv_ginkgo/AllSample-GinkgoSegmentSummary.txt"))
-                        .match("ginkgo_summary")
-                }
-            )
-            
-        }
-
-    }
 ```
