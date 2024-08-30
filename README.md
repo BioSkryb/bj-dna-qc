@@ -119,9 +119,7 @@ example-
 ** csv input **
 
 ```
-nextflow run main.nf \
-    --input_csv 'tests/data/inputs/input.csv' \
-    --publish_dir 'output/bj_dna_qc/'
+nextflow run main.nf -c conf/test_csv_input.config
 ```
 
 
