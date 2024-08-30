@@ -88,13 +88,13 @@ The input for the pipeline is fastq files. The input can be passed either direct
 - **Reads Directory Input**: Use the `--reads` parameter to specify the path to a directory containing the input files. By default, this parameter is set to `null`. For example, to use fastq files from a specific directory, you would use: 
 `--reads 's3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/*R{1,2}_001.fastq.gz'`
 
-- **CSV Metadata Input**: Alternatively, you can use the `--input_csv` parameter to specify a CSV file containing metadata. This parameter is also `null` by default. The CSV file should have 6 columns: `biosampleName`, `sampleId`, `reads`, `readLength`, `read1` and `read2`. 
-The `biosampleName` column contains the name of the biosample, the `sampleId` column contains the sample name in Illumina specified name format, `reads` have the number of reads, `readLength` with length of the reads and `read1` and `read2` has the path to the input reads. For example:
+- **CSV Metadata Input**: Alternatively, you can use the `--input_csv` parameter to specify a CSV file containing metadata. This parameter is also `null` by default. The CSV file should have 4 columns: `biosampleName`, `reads`, `read1` and `read2`. 
+The `biosampleName` column contains the name of the biosample, `reads` have the number of reads and `read1` and `read2` has the path to the input reads. For example:
 
 ```
-biosampleName,sampleId,reads,readLength,read1,read2
-DNAQC-test1-100reads,DNAQC-test1-100reads_S1_L001,100,76,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R2_001.fastq.gz
-DNAQC-test2-1000reads,DNAQC-test2-1000reads_S2_L001,1000,76,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R2_001.fastq.gzDNAQC-test1-100reads_S1_L001
+biosampleName,reads,read1,read2
+DNAQC-test1-100reads,100,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R2_001.fastq.gz
+DNAQC-test2-1000reads,1000,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R2_001.fastq.gzDNAQC-test1-100reads_S1_L001
 ```
 
 **Optional Modules**
