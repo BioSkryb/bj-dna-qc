@@ -179,3 +179,15 @@ Script Options: see nextflow.config
     --help              BOOL    Display help message
 
 ```
+**Tool versions**
+
+- `Seqtk: 1.3-r106`
+- `fastp: 0.20.1`
+- `FastQC: v0.11.9`
+- `Sentieon: 202308.01`
+- `QualiMap: v.2.2.2-dev`
+- `Preseq: 2.0.3`
+- `Kraken2: 2.1.3`
+- `bam-lorenz-coverage: 2.3.0 GNU`
+- `Ginkgo: 0.0.2`
+- `bedtools: v2.28.0`
