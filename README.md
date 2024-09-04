@@ -83,12 +83,9 @@ export SENTIEON_LICENSE=b06x-pbs01.inet.xxxxxxxxxxxx:xxxx
 
 **Input Options**
 
-The input for the pipeline is fastq files. The input can be passed either directly as path to the input file directory or via a input.csv with a meta data.
+The input for the pipeline can be passed via a input.csv with a meta data.
 
-- **Reads Directory Input**: Use the `--reads` parameter to specify the path to a directory containing the input files. By default, this parameter is set to `null`. For example, to use fastq files from a specific directory, you would use: 
-`--reads 's3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/*R{1,2}_001.fastq.gz'`
-
-- **CSV Metadata Input**: Alternatively, you can use the `--input_csv` parameter to specify a CSV file containing metadata. This parameter is also `null` by default. The CSV file should have 4 columns: `biosampleName`, `reads`, `read1` and `read2`. 
+- **CSV Metadata Input**: The CSV file should have 4 columns: `biosampleName`, `reads`, `read1` and `read2`. 
 The `biosampleName` column contains the name of the biosample, `reads` have the number of reads and `read1` and `read2` has the path to the input reads. For example:
 
 ```
@@ -119,7 +116,7 @@ example-
 ** csv input **
 
 ```
-nextflow run main.nf -c conf/test_csv_input.config
+nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv
 ```
 
 
@@ -191,3 +188,85 @@ Script Options: see nextflow.config
 - `bam-lorenz-coverage: 2.3.0 GNU`
 - `Ginkgo: 0.0.2`
 - `bedtools: v2.28.0`
+
+**nf-test**
+
+
+The BioSkryb BJ-DNA-QC nextflow pipeline run is tested using the nf-test framework.
+
+Installation:
+
+nf-test has the same requirements as Nextflow and can be used on POSIX compatible systems like Linux or OS X. You can install nf-test using the following command:
+```
+wget -qO- https://code.askimed.com/install/nf-test | bash
+```
+It will create the nf-test executable file in the current directory. Optionally, move the nf-test file to a directory accessible by your $PATH variable.
+
+Usage:
+
+```
+nf-test test
+```
+
+The nf-test for this repository is saved at tests/ folder.
+
+```
+    test("preseq_test") {
+        when {
+            params {
+                // define parameters here. Example: 
+                publish_dir = "${outputDir}/results"
+                timestamp = "test"
+            }
+        }
+
+        then {
+            assertAll(
+                
+                // Check if the workflow was successful
+                { assert workflow.success },
+
+                // Verify existence of the multiqc report HTML file
+                { 
+                    assert new File("${outputDir}/results_test/multiqc/multiqc_report.html").exists()
+                },
+
+                // Check for a match in the all metrics MQC text file
+                { 
+                    assert snapshot(path("${outputDir}/results_test/secondary_analyses/metrics/nf-preseq-pipeline_all_metrics_mqc.txt"))
+                        .match("all_metrics_mqc")
+                },
+
+                // Check for a match in the selected metrics MQC text file
+                { 
+                    assert snapshot(path("${outputDir}/results_test/secondary_analyses/metrics/nf-preseq-pipeline_selected_metrics_mqc.txt"))
+                        .match("selected_metrics_mqc")
+                },
+
+                // Verify existence of the fastp JSON file
+                { 
+                    assert new File("${outputDir}/results_test/primary_analyses/metrics/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64/fastp/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64_no_qc_fastp.json").exists()
+                },
+
+                // Check for a match in the kraken report text file
+                { 
+                    assert snapshot(path("${outputDir}/results_test/primary_analyses/metrics/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64/kraken2/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64_kraken2_report.txt"))
+                        .match("kraken_report")
+                },
+
+                // Verify existence of the qualimap HTML report
+                { 
+                    assert new File("${outputDir}/results_test/primary_analyses/metrics/H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64/qualimap/QUALIMAP_BAMQC_WF_H5L3TM-DNA-NA12878-23413-02F-100PG-V1-64/qualimapReport.html").exists()
+                },
+
+                // Check for a match in the Ginkgo segment summary text file
+                { 
+                    assert snapshot(path("${outputDir}/results_test/tertiary_analyses/cnv_ginkgo/AllSample-GinkgoSegmentSummary.txt"))
+                        .match("ginkgo_summary")
+                }
+            )
+            
+        }
+
+    }
+```
