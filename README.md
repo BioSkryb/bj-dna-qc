@@ -3,6 +3,24 @@
 
 The BioSkryb BJ-DNA-QC pipeline evaluates the quality of the single-cell library and it provides several qc metrics to assess the quality of the sequencing reads.
 
+One way that users can ensure that a single-cell library is uniformly amplified with low allelic dropouts, is by first sequencing using “low-pass” or low throughput sequencing of around 2M reads per sample. Data from the “low-pass” can used to estimate the genome coverage if the single-cell libraries were to be used for high-depth sequencing. Users can then select only quality libraries for high-depth sequencing.
+
+The BJ-DNA-QC pipeline uses low-pass sequencing data and generates several QC metrics that help assess whether the single-cell libraries are ready for high-depth sequencing.
+
+# Pipeline Overview
+Following are the steps and tools that pipeline uses to perform the analyses:
+
+- Subsample the reads to 2 million using SEQTK SAMPLE to compare metrics across samples
+- Evaluate sequencing quality control using FASTP and trim/clip reads
+- Map reads to reference genome using SENTIEON BWA MEM
+- Remove duplicate reads using SENTIEON DRIVER LOCUSCOLLECTOR and SENTIEON DRIVER DEDUP
+- Evaluate metrics using SENTIEON DRIVER METRICS which includes Alignment, GC Bias, Insert Size, and Coverage metrics
+- Evaluate the BAM quality control using QUALIMAP BAMQC
+- Evaluate the library complexity using PRESEQ BAM2MR and PRESEQ GC EXTRAP
+- Evaluate the CNV using a custom Ginkgo impelmentation
+- Evaluate taxonomic classification with Kraken
+- Aggregate the metrics across biosamples and tools to create overall pipeline statistics summary using MULTIQC
+
 # Running locally
 
 Following are instructions for running BJ-DNA-QC in a local Ubuntu 18.04 server
@@ -126,7 +144,6 @@ The pipeline saves its output files in the designated "publish_dir" directory. T
 
     Script Options: see nextflow.config
 
-
         [required]
         --input_csv         FILE    Path to input csv file
 
@@ -182,8 +199,8 @@ The pipeline saves its output files in the designated "publish_dir" directory. T
 - `Ginkgo: 0.0.2`
 - `bedtools: v2.28.0`
 
-**nf-test**
 
+**nf-test**
 
 The BioSkryb BJ-DNA-QC nextflow pipeline run is tested using the nf-test framework.
 
