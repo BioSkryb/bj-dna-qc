@@ -37,14 +37,14 @@ ${red}
         [required]
         --input_csv         FILE    Path to input csv file
 
+        --genome            STR     Reference genome to use. Available options - GRCh38, GRCm39
+                                    DEFAULT: ${params.genome}
+
 ${yellow}
         [optional]
         
         --genomes_base      STR     Path to the genomes
                                     DEFAULT: ${params.genomes_base}
-
-        --genome            STR     Reference genome to use. Available options - GRCh38
-                                    DEFAULT: ${params.genome}
 
         --publish_dir       DIR     Path to run output directory
                                     DEFAULT: ${params.publish_dir}

@@ -130,14 +130,13 @@ The pipeline saves its output files in the designated "publish_dir" directory. T
         [required]
         --input_csv         FILE    Path to input csv file
 
+        --genome            STR     Reference genome to use. Available options - GRCh38, GRCm39
+                                    DEFAULT: GRCh38
 
         [optional]
         
         --genomes_base      STR     Path to the genomes
                                     DEFAULT: s3://bioskryb-shared-data
-
-        --genome            STR     Reference genome to use. Available options - GRCh38
-                                    DEFAULT: GRCh38
 
         --publish_dir       DIR     Path to run output directory
                                     DEFAULT: 
@@ -169,7 +168,6 @@ The pipeline saves its output files in the designated "publish_dir" directory. T
                                     DEFAULT: true
                                     
         --help              BOOL    Display help message
-
 ```
 **Tool versions**
 
