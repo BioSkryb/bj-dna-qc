@@ -81,6 +81,16 @@ export SENTIEON_LICENSE=b06x-pbs01.inet.xxxxxxxxxxxx:xxxx
 
 ## Test Pipeline Execution
 
+**Command**
+
+example-
+
+** csv input **
+
+```
+nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv
+```
+
 **Input Options**
 
 The input for the pipeline can be passed via a input.csv with a meta data.
@@ -108,72 +118,57 @@ This pipeline includes several optional modules. You can choose to include or ex
 
 The pipeline saves its output files in the designated "publish_dir" directory. The different QC metrics files are stored in the "secondary_analyses/metrics/<sample_name>/alignment_stats" subdirectory.
 
-
-**Command**
-
-example-
-
-** csv input **
+**command options**
 
 ```
-nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv
-```
+    Usage:
+        nextflow run main.nf [options]
+
+    Script Options: see nextflow.config
 
 
-command options
-
-```
-
-Usage:
-    nextflow run main.nf [options]
-
-Script Options: see nextflow.config
-
-    
-    [required]
-
-    --reads             FILE    Path to fastq files specified as a glob pattern
-    OR
-    --input_csv         FILE    Path to input csv file
-
-    --publish_dir       DIR     Path to run output directory
+        [required]
+        --input_csv         FILE    Path to input csv file
 
 
-    [optional]
+        [optional]
+        
+        --genomes_base      STR     Path to the genomes
+                                    DEFAULT: s3://bioskryb-shared-data
 
-    --genomes_base      STR     Path to the genomes
-                                DEFAULT: s3://bioskryb-shared-data/genomes/
+        --genome            STR     Reference genome to use. Available options - GRCh38
+                                    DEFAULT: GRCh38
 
-    --genome            STR     Reference genome to use. Available options - GRCh38
-                                DEFAULT: GRCh38
+        --publish_dir       DIR     Path to run output directory
+                                    DEFAULT: 
+                                    
+        --timestamp         STR     User can specify timestamp otherwise uses runtime generated timestamp 
 
-    --timestamp         STR     User can specify timestamp otherwise uses runtime generated timestamp 
+        --n_reads           VAL     Number of reads to sample for analysis eg. 2.5M == 5M paired reads
+                                    DEFAULT: 2000000
 
-    --n_reads           VAL     Number of reads to sample for analysis eg. 2.5M == 5M paired reads
-                                DEFAULT: 2000000
+        --read_length       VAL     Desired read length for analysis and excess to be trimmed
+                                    DEFAULT: 75
 
-    --read_length       VAL     Desired read length for analysis and excess to be trimmed
-                                DEFAULT: 75
-
-    --email_on_fail     STR     Email to receive upon failure
-                                DEFAULT: viren.amin@bioskryb.com
-
-    --skip_kraken       STR     Skip KRAKEN2 module
-                                DEFAULT: false
-
-    --skip_qualimap     STR     Skip Qualimap module
-                                DEFAULT: true
-
-    --skip_fastqc       STR     Skip fastqc module
-                                DEFAULT: false
-
-    --skip_ginkgo        STR     Skip CNV - ginkgo module
-                                DEFAULT: false
-
-    --instrument        STR     Specify instrument. If 'NextSeq' or 'NovaSeq' set two_color_chemistry param true
-                                DEFAULT: 
-
-    --help              BOOL    Display help message
+        --email_on_fail     STR     Email to receive upon failure
+                                    DEFAULT: 
+                                    
+        --skip_kraken       STR     Skip KRAKEN2 module
+                                    DEFAULT: true
+                                    
+        --skip_qualimap     STR     Skip Qualimap module
+                                    DEFAULT: true
+                                    
+        --skip_mapd         STR     Skip MAPD module. MAPD is a measurement of the bin-to-bin variation in read coverage that is robust to the presence of CNVs, and is an indicator of the evenness of whole genome amplification (WGA)
+                                    DEFAULT: false
+        
+        --skip_fastqc       STR     Skip fastqc module
+                                    DEFAULT: true
+                                    
+        --skip_ginkgo       STR     Skip CNV - ginkgo module
+                                    DEFAULT: true
+                                    
+        --help              BOOL    Display help message
 
 ```
 **Tool versions**

@@ -19,34 +19,29 @@ def printHeader() {
 
 def helpMessage() {
 
-  yellow = "\033[0;37m"
-  blue = "\033[0;35m"
+  yellow = "\033[0;33m"
+  blue = "\033[0;34m"
   white = "\033[0m"
   red = "\033[0;31m"
 
   log.info """\
-
-    nf-preseq-pipeline
+${blue}
+    bj-dna-qc pipeline
 
     Usage:
         nextflow run main.nf [options]
 
     Script Options: see nextflow.config
 
-        ${yellow}
+${red}
         [required]
-
-        --reads             FILE    Path to fastq or fasterq files specified as a glob pattern
-        OR
         --input_csv         FILE    Path to input csv file
 
+${yellow}
         [optional]
         
         --genomes_base      STR     Path to the genomes
                                     DEFAULT: ${params.genomes_base}
-        
-        --is_fasterq        BOOL    Whether the input reads are fasterq
-                                    DEFAULT: ${params.is_fasterq}
 
         --genome            STR     Reference genome to use. Available options - GRCh38
                                     DEFAULT: ${params.genome}
@@ -77,32 +72,13 @@ def helpMessage() {
         --skip_fastqc       STR     Skip fastqc module
                                     DEFAULT: ${params.skip_fastqc}
                                     
-        --skip_ginkgo        STR     Skip CNV - ginkgo module
+        --skip_ginkgo       STR     Skip CNV - ginkgo module
                                     DEFAULT: ${params.skip_ginkgo}
                                     
-        --instrument        STR     Specify instrument. If 'NextSeq' or 'NovaSeq' set two_color_chemistry param true
-                                    DEFAULT: ${params.instrument}
-                                    
         --help              BOOL    Display help message
-        
-        [basejumper required]
-        
-                
-        --organization      STR     BioSkryb organization/client id
-                                    DEFAULT: ${params.organization}
-    
-        --workspace         STR     Organization/client's workspace
-                                    DEFAULT: ${params.workspace}
-    
-        --project           STR     Organization/client's project
-                                    DEFAULT: ${params.project}
                                     
-
-    ${yellow}
-
+${white}
     """.stripIndent()
-
-
 }
 
 workflow{

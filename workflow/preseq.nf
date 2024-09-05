@@ -89,7 +89,7 @@ workflow PRESEQ_WF {
         }
         SEQTK_WF (
                         ch_reads_with_n_reads,
-                        params.is_fasterq,
+                        false,
                         params.read_length,
                         ch_seqtk_sample_seed,
                         ch_publish_dir,

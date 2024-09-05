@@ -24,36 +24,15 @@ workflow {
         exit 1, "ERROR: publish_dir is not defined.\nPlease add --publish_dir s3://<bucket_name>/<project_name> to specify where the pipeline outputs will be stored."
     }
     
-    // Catching fastq or fasterq files
-    
     if ( params.reads ) {
         
-        if ( params.is_fasterq ) {
-            
-            ch_reads = Channel.fromFilePairs( params.reads , size: -1 , checkExists: true )
-
-        } else {
-                
-            ch_reads = Channel.fromFilePairs( params.reads , size: -1 , checkExists: true )
-
-        }
-        
-        ch_reads.ifEmpty{ exit 1, "ERROR: cannot find any fastq or fasterq files matching the pattern: ${params.reads}\nMake sure that the input file exists!" }
+        ch_reads = Channel.fromFilePairs( params.reads , size: -1 , checkExists: true )    
+        ch_reads.ifEmpty{ exit 1, "ERROR: cannot find any fastq files matching the pattern: ${params.reads}\nMake sure that the input file exists!" }
 
     } else if ( params.input_csv ) {
         
-        if ( params.is_fasterq ) {
-            
-            ch_reads = Channel.fromPath( params.input_csv ).splitCsv( header:true )
+        ch_reads = Channel.fromPath( params.input_csv ).splitCsv( header:true )
                             .map { row -> [ row.biosampleName, [ row.read1, row.read2 ] ] }
-
-        } else {
-                
-            ch_reads = Channel.fromPath( params.input_csv ).splitCsv( header:true )
-                            .map { row -> [ row.biosampleName, [ row.read1, row.read2 ] ] }
-
-        }
-        
         ch_reads.ifEmpty{ exit 1, "ERROR: Input csv file is empty." }
     }
     
