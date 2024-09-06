@@ -1,0 +1,70 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "main.nf"
+
+    test("preseq_test") {
+        when {
+            params {
+                // define parameters here. Example: 
+                publish_dir = "${outputDir}/results"
+                timestamp = "test"
+                architecture = "x86"
+                input_csv = "$baseDir/tests/data/inputs/input.csv"
+                skip_kraken = false
+                skip_qualimap = false
+                skip_mapd = false
+                skip_fastqc = false
+                skip_ginkgo = false
+                max_memory = "14.GB"
+                max_cpus = "4"
+                max_time = "2.h"
+            }
+        }
+
+        then {
+            assertAll(
+                
+                // Check if the workflow was successful
+                { assert workflow.success },
+
+                // Verify existence of the multiqc report HTML file
+                { 
+                    assert new File("${outputDir}/results_test/multiqc/multiqc_report.html").exists()
+                },
+
+                // Check for a match in the all metrics MQC text file
+                { 
+                    assert snapshot(path("${outputDir}/results_test/secondary_analyses/metrics/nf-preseq-pipeline_all_metrics_mqc.txt"))
+                        .match("all_metrics_mqc")
+                },
+
+                // Check for a match in the selected metrics MQC text file
+                { 
+                    assert snapshot(path("${outputDir}/results_test/secondary_analyses/metrics/nf-preseq-pipeline_selected_metrics_mqc.txt"))
+                        .match("selected_metrics_mqc")
+                },
+
+                // Verify existence of the fastp JSON file
+                { 
+                    assert new File("${outputDir}/results_test/primary_analyses/metrics/DNAQC-test2-1000reads/fastp/DNAQC-test2-1000reads_no_qc_fastp.json").exists()
+                },
+
+                // Check for a match in the kraken report text file
+                { 
+                    assert snapshot(path("${outputDir}/results_test/primary_analyses/metrics/DNAQC-test2-1000reads/kraken2/DNAQC-test2-1000reads_kraken2_report.txt"))
+                        .match("kraken_report")
+                },
+
+                // Check for a match in the Ginkgo segment summary text file
+                { 
+                    assert snapshot(path("${outputDir}/results_test/tertiary_analyses/cnv_ginkgo/AllSample-GinkgoSegmentSummary.txt"))
+                        .match("ginkgo_summary")
+                }
+            )
+            
+        }
+
+    }
+
+}

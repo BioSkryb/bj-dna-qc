@@ -80,21 +80,17 @@ cd bj-dna-qc
 
 ## Sentieon License Setup
 
-The Sentieon license is based on a lightweight floating license server process running on one node, and serving licenses though TCP to all other nodes. Normally this license server is running in a special non-computing node on the cluster periphery that has unrestricted access to the outside world through HTTPS, and serves the licenses to the rest of the nodes in the cluster by listening to a specific TCP port that needs to be open within the cluster. The license server needs to have external https access to validate the license, while the computing nodes do not need to have access to the internet.
-
-Client will need to provide FQDN (hostname) or IP address of the machine that they would like to use to host the license server along with the port the license server will listen at to create a license file by Sentieon.
-
-Sentieon license server supports connection through the proxy server. Set the standard `http_proxy` environment before starting the license server.
-
-In order to run Sentieon software will need to start a Sentieon license server on eg. `b06x-pbs01.inet.xxxxxxxxx`; running the following command will setup the license server as a running daemon in your system:
-
+The Sentieon license is a "localhost" license that starts a lightweight license server on the localhost. This type of license is very easy to use and get started with. However, because it can be used anywhere, we restrict this license to short-term testing/evaluation only. To use this type of license, you need to set the environment variable SENTIEON_LICENSE to point to the license file on the compute nodes:
 ```
-export http_proxy=<proxy_server_name_and_port>
-<SENTIEON_DIR>/bin/sentieon licsrvr --start --log <LOCATION_OF_LOG_FILE> <LICENSE_FILE> 
+export SENTIEON_LICENSE=</path/to/localhost.lic>
 ```
-To run Sentieon software in the computing nodes, will need to set an environmental variable to tell Sentieon software the location of the license server and port. This can be added to bash profile or to the scripts that will drive the pipelines:
+You can then use the Sentieon commands for data processing.
+
+## Resources Required
+
+For running the pipeline, a typical dataset (less than 8 million reads) requires 4 CPU cores and 14 GB of memory. For larger datasets, you may need to increase the resources to 8 CPU cores. You can specify these resources in the command as follows:
 ```
-export SENTIEON_LICENSE=b06x-pbs01.inet.xxxxxxxxxxxx:xxxx
+--max_cpus 4 --max_memory 14.GB
 ```
 
 ## Test Pipeline Execution
@@ -106,7 +102,7 @@ example-
 ** csv input **
 
 ```
-nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv
+nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv --max_cpus 4 --max_memory 14.GB
 ```
 
 **Input Options**
