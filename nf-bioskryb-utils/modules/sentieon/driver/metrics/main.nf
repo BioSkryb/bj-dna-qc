@@ -26,7 +26,7 @@ process SENTIEON_DRIVER_METRICS {
     if (mode == 'exome') {
         """
         set +u
-        if [ \$NF_TEST != "true" ]; then
+        if [ \$LOCAL != "true" ]; then
             . /opt/sentieon/cloud_auth.sh no-op
         else
             export SENTIEON_LICENSE=\$SENTIEON_LICENSE_SERVER
@@ -54,7 +54,7 @@ process SENTIEON_DRIVER_METRICS {
     } else if (mode == 'wgs') {
         """
         set +u
-        if [ \$NF_TEST != "true" ]; then
+        if [ \$LOCAL != "true" ]; then
             . /opt/sentieon/cloud_auth.sh no-op
         else
             export SENTIEON_LICENSE=\$SENTIEON_LICENSE_SERVER
@@ -88,7 +88,7 @@ process SENTIEON_DRIVER_METRICS {
         """
         set +u
         
-        if [ \$NF_TEST != "true" ]; then
+        if [ \$LOCAL != "true" ]; then
             . /opt/sentieon/cloud_auth.sh no-op
         else
             export SENTIEON_LICENSE=\$SENTIEON_LICENSE_SERVER

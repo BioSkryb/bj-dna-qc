@@ -19,7 +19,7 @@ process SENTIEON_BWA_MEM {
     def memory = "${task.memory.toGiga()-1}G"
     """
     set +u
-    if [ \$NF_TEST != "true" ]; then
+    if [ \$LOCAL != "true" ]; then
         . /opt/sentieon/cloud_auth.sh no-op
     else
         export SENTIEON_LICENSE=\$SENTIEON_LICENSE_SERVER

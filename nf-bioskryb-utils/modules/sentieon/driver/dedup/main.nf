@@ -25,7 +25,7 @@ process SENTIEON_DRIVER_DEDUP {
     
     set +u
     
-    if [ \$NF_TEST != "true" ]; then
+    if [ \$LOCAL != "true" ]; then
         . /opt/sentieon/cloud_auth.sh no-op
     else
         export SENTIEON_LICENSE=\$SENTIEON_LICENSE_SERVER
