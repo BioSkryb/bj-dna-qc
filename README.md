@@ -21,7 +21,7 @@ Following are the steps and tools that pipeline uses to perform the analyses:
 - Evaluate taxonomic classification with Kraken
 - Aggregate the metrics across biosamples and tools to create overall pipeline statistics summary using MULTIQC
 
-# Running locally
+# Running Locally
 
 Following are instructions for running BJ-DNA-QC in a local Ubuntu server
 
@@ -31,9 +31,6 @@ Following are instructions for running BJ-DNA-QC in a local Ubuntu server
 sudo apt-get install default-jdk
 
 java -version
-#openjdk version "11.0.18" 2023-01-17
-#OpenJDK Runtime Environment (build 11.0.18+10-post-Ubuntu-0ubuntu118.04.1)
-#OpenJDK 64-Bit Server VM (build 11.0.18+10-post-Ubuntu-0ubuntu118.04.1, mixed mode, sharing)
 ```
 
 ## Install AWS CLI
@@ -205,6 +202,7 @@ Installation:
 nf-test has the same requirements as Nextflow and can be used on POSIX compatible systems like Linux or OS X. You can install nf-test using the following command:
 ```
 wget -qO- https://code.askimed.com/install/nf-test | bash
+sudo mv nf-test /usr/local/bin/
 ```
 It will create the nf-test executable file in the current directory. Optionally, move the nf-test file to a directory accessible by your $PATH variable.
 
