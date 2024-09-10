@@ -23,7 +23,7 @@ Following are the steps and tools that pipeline uses to perform the analyses:
 
 # Running locally
 
-Following are instructions for running BJ-DNA-QC in a local Ubuntu 18.04 server
+Following are instructions for running BJ-DNA-QC in a local Ubuntu server
 
 ## Install Java 11
 
@@ -73,18 +73,14 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 
 ```
 
-## Download and Unzip Pipeline Repository
-```
-cd bj-dna-qc
-```
-
 ## Sentieon License Setup
 
 The Sentieon license is a "localhost" license that starts a lightweight license server on the localhost. This type of license is very easy to use and get started with. However, because it can be used anywhere, we restrict this license to short-term testing/evaluation only. To use this type of license, you need to set the environment variable SENTIEON_LICENSE to point to the license file on the compute nodes:
 ```
 export SENTIEON_LICENSE=</path/to/sentieon_eval.lic>
 ```
-The license file should be saved at the base directory of the pipeline.
+The license file should be saved at the base directory of the pipeline eg: `bj-dna-qc/sentieon_eval.lic`
+All users will need to  [ submit helpdesk ticket](https://bioskryb.atlassian.net/servicedesk/customer/portal/3/group/14/create/100) to get an evaluation/full pass-through BioSkryb's Sentieon license.
 
 ## Resources Required
 
@@ -95,6 +91,8 @@ For running the pipeline, a typical dataset (less than 8 million reads) requires
 
 ## Test Pipeline Execution
 
+All pipeline resources are publically available at `s3://bioskryb-public-data/pipeline_resources` users need not have to download this, and will be downloaded during nextflow run.
+
 **Command**
 
 example-
@@ -102,6 +100,8 @@ example-
 ** csv input **
 
 ```
+git clone https://github.com/BioSkryb/bj-dna-qc.git
+cd bj-dna-qc
 nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv --max_cpus 4 --max_memory 14.GB
 ```
 
@@ -130,7 +130,7 @@ This pipeline includes several optional modules. You can choose to include or ex
 
 **Outputs**
 
-The pipeline saves its output files in the designated "publish_dir" directory. The different QC metrics files are stored in the "secondary_analyses/metrics/<sample_name>/alignment_stats" subdirectory.
+The pipeline saves its output files in the designated "publish_dir" directory. The different QC metrics files are stored in the "secondary_analyses/metrics/<sample_name>/" subdirectory. For details: [BJ-DNA-QC outputs](https://docs.basejumper.bioskryb.com/pipelines/secondary/bj-dna-qc/1.9.1/docs/#output-directories)
 
 **command options**
 
