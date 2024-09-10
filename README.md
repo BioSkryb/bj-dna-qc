@@ -82,9 +82,9 @@ cd bj-dna-qc
 
 The Sentieon license is a "localhost" license that starts a lightweight license server on the localhost. This type of license is very easy to use and get started with. However, because it can be used anywhere, we restrict this license to short-term testing/evaluation only. To use this type of license, you need to set the environment variable SENTIEON_LICENSE to point to the license file on the compute nodes:
 ```
-export SENTIEON_LICENSE=</path/to/localhost.lic>
+export SENTIEON_LICENSE=</path/to/sentieon_eval.lic>
 ```
-You can then use the Sentieon commands for data processing.
+The license file should be saved at the base directory of the pipeline.
 
 ## Resources Required
 
