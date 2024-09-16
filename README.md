@@ -297,3 +297,8 @@ D., Velivela, S., Harton, G. L., Marks, J. R., Hwang, E. S., Weigman, V. J., & W
 A. (n.d.). Unifying genomics and transcriptomics in single cells with ResolveOME amplification
 chemistry to illuminate oncogenic and drug resistance mechanisms. [https://www.biorxiv.org/content/10.1101/2022.04.29.489440v1.full](https://www.biorxiv.org/content/10.1101/2022.04.29.489440v1.full)
 
+NOTE: Several studies have utilized BaseJumper pipelines as part of the standard 
+quality control processes implemented through ResolveServices<sup>SM</sup>. While these 
+pipelines may not be explicitly cited, they are integral to the methodologies 
+described.
+
