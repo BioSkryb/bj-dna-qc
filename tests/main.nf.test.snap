@@ -1,0 +1,26 @@
+{
+    "selected_metrics_mqc": {
+        "content": [
+            "nf-preseq-pipeline_selected_metrics_mqc.txt:md5,77c10c15b0b25d4a877262ebba87021d"
+        ],
+        "timestamp": "2024-09-05T14:59:14+0000"
+    },
+    "ginkgo_summary": {
+        "content": [
+            "AllSample-GinkgoSegmentSummary.txt:md5,7bef2918a7732bb65fcbab539b2e65a9"
+        ],
+        "timestamp": "2024-09-05T14:59:14+0000"
+    },
+    "all_metrics_mqc": {
+        "content": [
+            "nf-preseq-pipeline_all_metrics_mqc.txt:md5,97aba546c5b1e8d791c96eb02c530548"
+        ],
+        "timestamp": "2024-09-05T14:59:14+0000"
+    },
+    "kraken_report": {
+        "content": [
+            "DNAQC-test2-1000reads_kraken2_report.txt:md5,52c96bce25dd27a5dec5284e32fab629"
+        ],
+        "timestamp": "2024-09-05T14:59:14+0000"
+    }
+}
