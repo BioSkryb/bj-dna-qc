@@ -71,7 +71,8 @@ workflow {
                 ch_binref,
                 ch_gcref,
                 ch_boundsref_file,
-                params.seqtk_sample_seed
+                params.seqtk_sample_seed,
+                params.min_reads
              )
     
     

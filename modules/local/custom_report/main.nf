@@ -8,7 +8,8 @@ process CUSTOM_REPORT {
     
     input:
     path(files)
-    path(input_csv)
+    path(read_counts_csv)
+    val(min_reads)
     val(publish_dir)
     val(enable_publish)
 
@@ -20,7 +21,7 @@ process CUSTOM_REPORT {
     
     script:
     """
-    python3 /scripts/custom_report.py -s '*sentieonmetrics.txt' -m '*MAPD' -q '*no_qc_fastp.json' -t '*sample_metadata.json' -l '*lorenzstats.tsv' -i '$input_csv' -o 'Summary'
+    python3 /scripts/custom_report.py -s '*sentieonmetrics.txt' -m '*MAPD' -q '*no_qc_fastp.json' -t '*sample_metadata.json' -l '*lorenzstats.tsv' -i '$read_counts_csv' -r '$min_reads' -o 'Summary'
 
 
     echo custom_report: v0.0.1 > custom_report_version.yml
@@ -32,13 +33,15 @@ process CUSTOM_REPORT {
 workflow CUSTOM_REPORT_WF{
     take:
         ch_metrics
-        ch_input_csv
+        ch_read_counts_csv
+        ch_min_reads
         ch_publish_dir
         ch_enable_publish
     main:
         CUSTOM_REPORT ( 
                         ch_metrics,
-                        ch_input_csv,
+                        ch_read_counts_csv,
+                        ch_min_reads,
                         ch_publish_dir,
                         ch_enable_publish
                       )
@@ -50,8 +53,9 @@ workflow CUSTOM_REPORT_WF{
 workflow{
     
     ch_files = Channel.fromPath(params.metrics_file)
-    ch_input_csv = Channel.fromPath("NO_FILE")
+    ch_read_counts_csv = Channel.fromPath("NO_FILE")
+    ch_min_reads = 1000
     
-    CUSTOM_REPORT_WF ( ch_files, ch_input_csv, params.publish_dir, params.enable_publish )
+    CUSTOM_REPORT_WF ( ch_files, ch_read_counts_csv, ch_min_reads, params.publish_dir, params.enable_publish )
     
 }
