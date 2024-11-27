@@ -38,6 +38,7 @@ include { GINKO_RDS_TO_FLAT } from '../nf-bioskryb-utils/modules/ginkgo/rds_to_f
 include { GINKO_PARSE_OUTPUTS } from '../nf-bioskryb-utils/modules/ginkgo/parse_ginko_outputs/main.nf' addParams(timestamp: params.timestamp)
 include { PARSE_RDS_CNV_METRICS } from '../nf-bioskryb-utils/modules/ginkgo/parse_rds_cnv_metrics/main.nf' addParams(timestamp: params.timestamp)
 include { BAM_LORENZ_COVERAGE_WF } from '../nf-bioskryb-utils/modules/bam_lorenz_coverage/main.nf' addParams(timestamp: params.timestamp)
+include { COUNT_READS_FASTQ_WF } from '../nf-bioskryb-utils/modules/bioskryb/custom_read_counts/main.nf' addParams(timestamp: params.timestamp)
 
 
 params.reference         = params.genomes [ params.genome ] [ 'reference' ]
@@ -69,6 +70,7 @@ workflow PRESEQ_WF {
         ch_gcref
         ch_boundsref_file
         ch_seqtk_sample_seed
+        ch_min_reads
     
     main:
     
@@ -84,9 +86,25 @@ workflow PRESEQ_WF {
             ch_input_csv = Channel.fromPath( input_csv_dummy_file ).collect()
         }
 
-        ch_reads_with_n_reads = ch_reads.map { biosampleName, reads ->
+        COUNT_READS_FASTQ_WF (
+                                ch_reads,
+                                params.publish_dir,
+                                params.enable_publish
+                            )
+        COUNT_READS_FASTQ_WF.out.read_counts
+        .map { sample_id, files, read_count -> 
+            [sample_id, files, read_count.toInteger()]
+        }
+        .branch {
+            small: it[2] < ch_min_reads
+            large: it[2] >= ch_min_reads
+        }
+        .set { branched_reads }
+
+        ch_reads_with_n_reads = branched_reads.large.map { biosampleName, reads, read_count ->
             return [ biosampleName, reads, params.n_reads ]
         }
+
         SEQTK_WF (
                         ch_reads_with_n_reads,
                         false,
@@ -334,7 +352,8 @@ workflow PRESEQ_WF {
                             .combine( ch_bam_lorenz_coverage_stats.collect().ifEmpty([]) )
                             .combine( ch_custom_calculate_mapd_metrics.collect().ifEmpty([]) )
                             .combine( ch_ginkgo_stats.ifEmpty([]) ),
-                            ch_input_csv,
+                            COUNT_READS_FASTQ_WF.out.combined_read_counts,
+                            ch_min_reads,
                             ch_publish_dir,
                             ch_enable_publish
                         )

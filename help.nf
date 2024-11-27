@@ -57,6 +57,9 @@ ${yellow}
         --read_length       VAL     Desired read length for analysis and excess to be trimmed
                                     DEFAULT: ${params.read_length}
 
+        --min_reads         VAL     Minimum number of reads required for analysis. Samples with fewer reads will be flagged.
+                                    DEFAULT: 1000
+
         --email_on_fail     STR     Email to receive upon failure
                                     DEFAULT: ${params.email_on_fail}
                                     

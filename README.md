@@ -106,13 +106,13 @@ nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv --max_cpus 4 -
 
 The input for the pipeline can be passed via a input.csv with a meta data.
 
-- **CSV Metadata Input**: The CSV file should have 4 columns: `biosampleName`, `reads`, `read1` and `read2`. 
-The `biosampleName` column contains the name of the biosample, `reads` have the number of reads and `read1` and `read2` has the path to the input reads. For example:
+- **CSV Metadata Input**: The CSV file should have 3 columns: `biosampleName`, `read1` and `read2`. 
+The `biosampleName` column contains the name of the biosample, `read1` and `read2` has the path to the input reads. For example:
 
 ```
-biosampleName,reads,read1,read2
-DNAQC-test1-100reads,100,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R2_001.fastq.gz
-DNAQC-test2-1000reads,1000,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R2_001.fastq.gzDNAQC-test1-100reads_S1_L001
+biosampleName,read1,read2
+DNAQC-test1-100reads,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test1-100reads_S1_L001_R2_001.fastq.gz
+DNAQC-test2-1000reads,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R1_001.fastq.gz,s3://bioskryb-public-data/pipeline_resources/dev-resources/local_test_files/DNAQC-test2-1000reads_S2_L001_R2_001.fastq.gzDNAQC-test1-100reads_S1_L001
 ```
 
 **Optional Modules**
@@ -158,6 +158,9 @@ The pipeline saves its output files in the designated "publish_dir" directory. T
 
         --read_length       VAL     Desired read length for analysis and excess to be trimmed
                                     DEFAULT: 75
+
+        --min_reads       VAL       Minimum number of reads required for analysis. Samples with fewer reads will be flagged.
+                                    DEFAULT: 1000
 
         --email_on_fail     STR     Email to receive upon failure
                                     DEFAULT: 
