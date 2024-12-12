@@ -13,12 +13,10 @@ process FASTP {
     val(adapter_sequence_r2)
     val(publish_dir)
     val(enable_publish)
-    
-    when:
-    reads[0].size() > 10.KB
 
     output:
     tuple val(sample_name), path("*trim.fastq.gz"), emit: reads
+    tuple val(sample_name), path("*fastp.json"), emit: json
     path("*fastp.json"), emit: report
     path("fastp_version.yml"), emit: version
 
@@ -205,6 +203,7 @@ workflow FastpFull_WF{
               )
     emit:
         reads = FASTP.out.reads
+        json = FASTP.out.json
         version = FASTP.out.version
         report = FASTP.out.report
     

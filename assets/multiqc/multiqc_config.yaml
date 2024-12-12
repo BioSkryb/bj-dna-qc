@@ -1,4 +1,4 @@
-subtitle: "BJ-DNA-QC v2.0.4"
+subtitle: "BJ-DNA-QC v2.0.5"
 custom_logo_title: 'BioSkryb Genomics'
 custom_logo: bioskryb_logo-tagline.png
 intro_text: "The report aggregates all metrics from BJ-DNA-QC pipeline to help evaluate the performance of single-cell libraries."
