@@ -1,26 +1,26 @@
 {
     "selected_metrics_mqc": {
         "content": [
-            "nf-preseq-pipeline_selected_metrics_mqc.txt:md5,80c5a494ea6e65f3e6b724c052b6ae55"
+            "nf-preseq-pipeline_selected_metrics_mqc.txt:md5,3f8b50aade4e6a2955ad4e19e016e4a9"
         ],
-        "timestamp": "2024-11-19T15:47:51+0000"
+        "timestamp": "2024-12-12T06:10:58+0000"
     },
     "ginkgo_summary": {
         "content": [
             "AllSample-GinkgoSegmentSummary.txt:md5,7bef2918a7732bb65fcbab539b2e65a9"
         ],
-        "timestamp": "2024-11-19T15:47:51+0000"
+        "timestamp": "2024-12-12T06:10:58+0000"
     },
     "all_metrics_mqc": {
         "content": [
-            "nf-preseq-pipeline_all_metrics_mqc.txt:md5,ee42f826d2d214a065d7e9799c8244c7"
+            "nf-preseq-pipeline_all_metrics_mqc.txt:md5,54116b9fe3451d0e8460138f61eba39f"
         ],
-        "timestamp": "2024-11-19T15:47:51+0000"
+        "timestamp": "2024-12-12T06:10:58+0000"
     },
     "kraken_report": {
         "content": [
             "DNAQC-test2-1000reads_kraken2_report.txt:md5,52c96bce25dd27a5dec5284e32fab629"
         ],
-        "timestamp": "2024-11-19T15:47:51+0000"
+        "timestamp": "2024-12-12T06:10:58+0000"
     }
 }

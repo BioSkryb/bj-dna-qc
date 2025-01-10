@@ -1,5 +1,5 @@
 
-# BJ-DNA-QC
+# BaseJumper BJ-DNA-QC
 
 The BioSkryb BJ-DNA-QC pipeline evaluates the quality of the single-cell library and it provides several qc metrics to assess the quality of the sequencing reads.
 

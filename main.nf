@@ -11,7 +11,7 @@ if ( params.help ) {
 
 params.reference     = params.genomes [ params.genome ] [ 'reference' ]
 params.intervals     = params.genomes [ params.genome ] [ 'base_metrics_intervals' ]
-params.ginko_ref_dir = params.genomes [ params.genome ] [ "${params.bin_size}" ] [ 'ginko_ref_dir' ]
+params.ginko_ref_dir = params.genomes [ params.genome ] [ "${params.bin_size}" ] [ "${params.ginko_readlen}" ] [ 'ginko_ref_dir' ]
 params.krakendb      = params.genomes [ params.genome ] [ 'kraken2_db' ]
 
 workflow {
