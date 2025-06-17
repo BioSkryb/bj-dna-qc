@@ -55,7 +55,7 @@ workflow KRAKEN2_WF{
 
 workflow{
     ch_reads = Channel.fromFilePairs( params.reads , size: -1 , checkExists: true )
-                            .map { tag, pair -> subtags = (tag =~ /(.*)_(S\d+)_(L0+\d+)/)[0]; [subtags[1], pair] }
+                            .map { tag, pair -> def subtags = (tag =~ /(.*)_(S\d+)_(L0+\d+)/)[0]; [subtags[1], pair] }
     KRAKEN2_WF (
                     ch_reads,
                     params.krakendb,

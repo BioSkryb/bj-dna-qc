@@ -50,7 +50,8 @@ workflow CUSTOM_FASTQ_MERGE_WF{
 workflow{
     
     ch_reads = Channel.fromFilePairs( params.reads , size: -1 , checkExists: true )
-                            .map { tag, pair -> subtags = ( tag =~ /(.*)_(S\d+)_(L+\d+)/)[0]; [ subtags[1], subtags[2], subtags[3], pair ] }
+                            .map { tag, pair -> 
+                            def subtags = ( tag =~ /(.*)_(S\d+)_(L+\d+)/)[0]; [ subtags[1], subtags[2], subtags[3], pair ] }
                             .groupTuple()
                             .map { tag, sample, lane, pair -> [ tag, sample.flatten(), lane.flatten(), pair.flatten() ] }
                             

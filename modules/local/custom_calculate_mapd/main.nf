@@ -7,7 +7,7 @@ process CUSTOM_CALCULATE_MAPD {
 
 
     input:
-    tuple val(sample_name), path(bam), path(_)
+    tuple val(sample_name), path(bam), path(bai)
     val(bin_size)
     path(blacklist_regions)
     path fasta_ref

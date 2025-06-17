@@ -7,6 +7,7 @@ process PRESEQ_GC_EXTRAP {
 
     input:
     tuple val(sample_name), path(bam)
+    val(type)
     val(publish_dir)
     val(enable_publish)
 
@@ -22,9 +23,9 @@ process PRESEQ_GC_EXTRAP {
     set +u
     . /opt/sentieon/cloud_auth.sh no-op
 
-    echo "0" > ${sample_name}_preseq_cov.txt        
+    echo "0" > ${sample_name}_${type}_preseq_cov.txt        
     {
-      preseq gc_extrap -o ${sample_name}.curve ${bam} && tail -n 1 ${sample_name}.curve | cut -f 2 > ${sample_name}_preseq && PRESEQ_FLOAT=\$(cat ${sample_name}_preseq) && echo \${PRESEQ_FLOAT%.*} > ${sample_name}_preseq_cov.txt
+      preseq gc_extrap -o ${sample_name}.curve ${bam} && tail -n 1 ${sample_name}.curve | cut -f 2 > ${sample_name}_preseq && PRESEQ_FLOAT=\$(cat ${sample_name}_preseq) && echo \${PRESEQ_FLOAT%.*} > ${sample_name}_${type}_preseq_cov.txt
     } || {
       echo "preseq failed; likely due to an inability to accurately model library complexity; using a dummy file with 0 count" &&        touch ${sample_name}.curve
     }
