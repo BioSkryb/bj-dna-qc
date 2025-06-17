@@ -99,7 +99,7 @@ example-
 ```
 git clone https://github.com/BioSkryb/bj-dna-qc.git
 cd bj-dna-qc
-nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv --max_cpus 4 --max_memory 14.GB
+nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv --max_cpus 4 --max_memory 14.GB --publish_dir test
 ```
 
 **Input Options**
