@@ -1,4 +1,4 @@
-subtitle: "BJ-DNA-QC v2.0.5"
+subtitle: "BJ-DNA-QC v2.0.9"
 custom_logo_title: 'BioSkryb Genomics'
 custom_logo: bioskryb_logo-tagline.png
 intro_text: "The report aggregates all metrics from BJ-DNA-QC pipeline to help evaluate the performance of single-cell libraries."
@@ -155,11 +155,11 @@ custom_data:
         scale: "Greys"
         description: "Number of genome-wide copy changes (gain or loss)"
         placement: 1040
-      cnv_segment_MAD:
-        title: "Segment score of MAD"
+      SegmentMAD_Aware:
+        title: "CN-Aware MAD"
         format: "{:,.3f}"
         scale: "Greys"
-        description: "Median absolute deviation (MAD) of cnv-segment. A lower number represents data with less amount of noise"
+        description: "CN-Aware Median absolute deviation (MAD) of cnv-segment."
         placement: 1060
       MAPD Score:
         title: "MAPD Score"
@@ -774,16 +774,556 @@ custom_data:
         scale: "Greens"
         description: "Median absolute deviation (MAD) of cnv-segment. A lower number represents data with less amount of noise"
         placement: 1050
+      SegmentMAD_Aware:
+        title: "CN-Aware MAD"
+        format: "{:,.3f}"
+        scale: "Greens"
+        description: "CN-Aware Median absolute deviation (MAD) of cnv-segment."
+        placement: 1060
+      preseq_count_nondedup:
+        title: "Preseq Count_NonDedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "Preseq: Expected number of bases covered >= 1 for theoretical larger experiment."
+        placement: 1070
+      TOTAL_READS_ndd:
+        title: "Sampled Reads Non dedup"
+        description: "AlignmentStat: The total number of reads including all PF and non-PF reads. When CATEGORY equals PAIR this value will be 2x the number of clusters."
+        format: "{:,.0f}"
+        scale: "Greens"
+        placement: 1080
+      PF_READS_ndd:
+        title: "PF Reads Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The number of PF reads where PF is defined as passing Illumina's filter."
+        placement: 1090
+      PCT_PF_READS_ndd:
+        title: "Proportion PF Reads Non dedup"
+        format: "{:,.2f}"
+        scale: "Greens"
+        description: "AlignmentStat: The fraction of reads that are PF (PF_READS / TOTAL_READS)"
+        placement: 1100
+      PF_NOISE_READS_ndd:
+        title: "PF Noise Reads Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The number of PF reads that are marked as noise reads. A noise read is one which is composed entirely of A bases and/or N bases. These reads are marked as they are usually artifactual and are of no use in downstream analysis."
+        placement: 1110
+      PF_READS_ALIGNED_ndd:
+        title: "PF Reads Aligned Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The total number of aligned bases, in all mapped PF reads, that are aligned to the reference sequence."
+        placement: 1120
+      PCT_PF_READS_ALIGNED_ndd:
+        title: "Proportion PF Reads Aligned Non dedup"
+        format: "{:,.2f}"
+        scale: "Greens"
+        description: "AlignmentStat: The percentage of PF reads that aligned to the reference sequence. PF_READS_ALIGNED / PF_READS"
+        placement: 1130
+      PF_ALIGNED_BASES_ndd:
+        title: "PF Aligned Bases Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The total number of aligned bases, in all mapped PF reads, that are aligned to the reference sequence."
+        placement: 1140
+      PF_HQ_ALIGNED_READS_ndd:
+        title: "PF HQ Aligned Reads Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The number of PF reads that were aligned to the reference sequence with a mapping quality of Q20 or higher signifying that the aligner estimates a 1/100 (or smaller) chance that the alignment is wrong."
+        placement: 1150
+      PF_HQ_ALIGNED_BASES_ndd:
+        title: "PF HQ Aligned Bases Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The number of bases aligned to the reference sequence in reads that were mapped at high quality. Will usually approximate PF_HQ_ALIGNED_READS * READ_LENGTH but may differ when either mixed read lengths are present or many reads are aligned with gaps."
+        placement: 1160
+      PF_HQ_ALIGNED_Q20_BASES_ndd:
+        title: "PF HQ Aligned Q20 Bases Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The subset of PF_HQ_ALIGNED_BASES where the base call quality was Q20 or higher."
+        placement: 1170
+      PF_HQ_MEDIAN_MISMATCHES_ndd:
+        title: "PF HQ Median Mismatches Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The median number of mismatches versus the reference sequence in reads that were aligned to the reference at high quality (i.e. PF_HQ_ALIGNED READS)."
+        placement: 1180
+      PF_MISMATCH_RATE_ndd:
+        title: "PF Mismatch Rate Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The rate of bases mismatching the reference for all bases aligned to the reference sequence."
+        placement: 1190
+      PF_HQ_ERROR_RATE_ndd:
+        title: "PF HQ Error Rate Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The fraction of bases that mismatch the reference in PF HQ aligned reads."
+        placement: 1200
+      PF_INDEL_RATE_ndd:
+        title: "PF Indel Rate Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The number of insertion and deletion events per 100 aligned bases. Uses the number of events as the numerator, not the number of inserted or deleted bases."
+        placement: 1210
+      MEAN_READ_LENGTH_ndd:
+        title: "Mean Read Length Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The mean read length of the set of reads examined. When looking at the data for a single lane with equal length reads this number is just the read length. When looking at data for merged lanes with differing read lengths this is the mean read length of all reads."
+        placement: 1220
+      READS_ALIGNED_IN_PAIRS_ndd:
+        title: "Reads Aligned in Pairs Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "AlignmentStat: The number of aligned reads whose mate pair was also aligned to the reference."
+        placement: 1230
+      PCT_READS_ALIGNED_IN_PAIRS_ndd:
+        title: "Proportion Reads Aligned in Pairs Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The fraction of reads whose mate pair was also aligned to the reference. READS_ALIGNED_IN_PAIRS / PF_READS_ALIGNED"
+        placement: 1240
+      BAD_CYCLES_ndd:
+        title: "Bad Cycles Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The number of instrument cycles in which 80% or more of base calls were no-calls."
+        placement: 1250
+      STRAND_BALANCE_ndd:
+        title: "Stand Balance Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The number of PF reads aligned to the positive strand of the genome divided by the number of PF reads aligned to the genome."
+        placement: 1260
+      PCT_CHIMERAS_ndd:
+        title: "Proportion Chimeras Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The fraction of reads that map outside of a maximum insert size (usually 100kb) or that have the two ends mapping to different chromosomes."
+        placement: 1270
+      PCT_ADAPTER_ndd:
+        title: "Proportion Adapters Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        description: "AlignmentStat: The fraction of PF reads that are unaligned and match to a known adapter sequence right from the start of the read."
+        placement: 1280
+      chr1_ndd:
+        title: "chr1 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr1"
+        placement: 1290
+      chr2_ndd:
+        title: "chr2 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr2"
+        placement: 1300
+      chr3_ndd:
+        title: "chr3 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr3"
+        placement: 1310
+      chr4_ndd:
+        title: "chr4 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr4"
+        placement: 1320
+      chr5_ndd:
+        title: "chr5 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr5"
+        placement: 1330
+      chr6_ndd:
+        title: "chr6 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr6"
+        placement: 1340
+      chr7_ndd:
+        title: "chr7 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr7"
+        placement: 1350
+      chr8_ndd:
+        title: "chr8 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr8"
+        placement: 1360
+      chr9_ndd:
+        title: "chr9 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr9"
+        placement: 1370
+      chr10_ndd:
+        title: "chr10 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr10"
+        placement: 1380
+      chr11_ndd:
+        title: "chr11 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr11"
+        placement: 1390
+      chr12_ndd:
+        title: "chr12 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr12"
+        placement: 1400
+      chr13_ndd:
+        title: "chr13 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr13"
+        placement: 1410
+      chr14_ndd:
+        title: "chr14 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr14"
+        placement: 1420
+      chr15_ndd:
+        title: "chr15 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr15"
+        placement: 1430
+      chr16_ndd:
+        title: "chr16 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr16"
+        placement: 1440
+      chr17_ndd:
+        title: "chr17 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr17"
+        placement: 1450
+      chr18_ndd:
+        title: "chr18 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr18"
+        placement: 1460
+      chr19_ndd:
+        title: "chr19 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr19"
+        placement: 1470
+      chr20_ndd:
+        title: "chr20 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr20"
+        placement: 1480
+      chr21_ndd:
+        title: "chr21 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr21"
+        placement: 1490
+      chr22_ndd:
+        title: "chr22 Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chr22"
+        placement: 1500
+      chrX_ndd:
+        title: "chrX Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chrX"
+        placement: 1510
+      chrY_ndd:
+        title: "chrY Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chrY"
+        placement: 1520
+      chrM_ndd:
+        title: "chrM Non dedup"
+        format: "{:,.3f}"
+        scale: "Purples"
+        description: "Proportion of reads mapping to chrM"
+        placement: 1530
+      GENOME_TERRITORY_ndd:
+        title: "Genome Territory Non dedup"
+        format: "{:,.0f}"
+        scale: "Greens"
+        description: "WgsMetricsAlgo: The number of non-N bases in the genome reference over which coverage will be evaluated."
+        placement: 1540
+      MEAN_COVERAGE_ndd:
+        title: "Mean Coverage Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        description: "WgsMetricsAlgo: The mean coverage in bases of the genome territory, after all filters are applied."
+        placement: 1550
+      SD_COVERAGE_ndd:
+        title: "SD Coverage Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        description: "WgsMetricsAlgo: The standard deviation of coverage of the genome after all filters are applied."
+        placement: 1560
+      MEDIAN_COVERAGE_ndd:
+        title: "Median Coverage Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        description: "WgsMetricsAlgo: The median coverage in bases of the genome territory, after all filters are applied."
+        placement: 1570
+      MAD_COVERAGE_ndd:
+        title: "MAD Coverage Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        description: "WgsMetricsAlgo: The median absolute deviation of coverage of the genome after all filters are applied."
+        placement: 1580
+      PCT_EXC_MAPQ_ndd:
+        title: "Proportion Bases with low MAPQ Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1590
+        description: "WgsMetricsAlgo: The fraction of aligned bases that were filtered out because they were in reads with low mapping quality (default is < 20)."
+      PCT_EXC_DUPE_ndd:
+        title: "Proportion Bases with Duplicates Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1600
+        description: "WgsMetricsAlgo: The fraction of aligned bases that were filtered out because they were in reads marked as duplicates."
+      PCT_EXC_UNPAIRED_ndd:
+        title: "Proportion Bases Unpaired Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1610
+        description: "WgsMetricsAlgo: The fraction of aligned bases that were filtered out because they were in reads without a mapped mate pair."
+      PCT_EXC_BASEQ_ndd:
+        title: "Proportion Bases with low BASEQ Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1620
+        description: "WgsMetricsAlgo: The fraction of aligned bases that were filtered out because they were of low base quality (default is < 20)."
+      PCT_EXC_OVERLAP_ndd:
+        title: "Proportion Bases with Overlap Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1630
+        description: "WgsMetricsAlgo: The fraction of aligned bases that were filtered out because they were the second observation from an insert with overlapping reads."
+      PCT_EXC_CAPPED_ndd:
+        title: "Proportion Bases above Capped Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1640
+        description: "WgsMetricsAlgo: The fraction of aligned bases that were filtered out because they would have raised coverage above the capped value (default cap = 250x)."
+      PCT_EXC_TOTAL_ndd:
+        title: "Proportion Bases Excluded in Total Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1650
+        description: "WgsMetricsAlgo: The total fraction of aligned bases excluded due to all filters."
+      PCT_1X_ndd:
+        title: "Proportion Bases > 1x Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1660
+        description: "WgsMetricsAlgo: The fraction of bases that attained at least 1X sequence coverage in post-filtering bases."
+      PCT_5X_ndd:
+        title: "Proportion Bases > 5x Non dedup"
+        format: "{:,.3f}"
+        scale: "Greens"
+        placement: 1670
+        description: "WgsMetricsAlgo: The fraction of bases that attained at least 5X sequence coverage in post-filtering bases."
+      HET_SNP_SENSITIVITY_ndd:
+        title: "HET SNP Sensitivity Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        placement: 1680
+        description: "WgsMetricsAlgo: The theoretical HET SNP sensitivity."
+      HET_SNP_Q_ndd:
+        title: "HET SNP Phred Scaled Q Score Non dedup"
+        format: "{:,.4f}"
+        scale: "Greens"
+        placement: 1690
+        description: "WgsMetricsAlgo: The Phred Scaled Q Score of the theoretical HET SNP sensitivity."
+      WINDOW_SIZE_ndd:
+        title: "Window Size on the genome Non dedup"
+        format: "{:,.0f}"
+        scale: "Blues"
+        placement: 1700
+        description: "GCBias: The window size on the genome used to calculate the GC of the sequence."
+      TOTAL_CLUSTERS_ndd:
+        title: "Total Clusters seen in GC Bias Non dedup"
+        format: "{:,.0f}"
+        scale: "Blues"
+        placement: 1710
+        description: "GCBias: The total number of clusters that were seen in the gc bias calculation."
+      ALIGNED_READS_ndd:
+        title: "Reads Used by GC Bias Algo Non dedup"
+        format: "{:,.0f}"
+        scale: "Blues"
+        placement: 1720
+        description: "GCBias: The total number of aligned reads used to compute the gc bias metrics."
+      AT_DROPOUT_ndd:
+        title: "AT Dropout Non dedup"
+        format: "{:,.2f}"
+        scale: "Blues"
+        placement: 1730
+        description: "GCBias: Illumina-style AT dropout metric. Calculated by taking each GC bin independently and calculating (%ref_at_gc - %reads_at_gc) and summing all positive values for GC=[0..50]."
+      GC_DROPOUT_ndd:
+        title: "GC Dropout Non dedup"
+        format: "{:,.2f}"
+        scale: "Blues"
+        placement: 1740
+        description: "GCBias: Illumina-style GC dropout metric. Calculated by taking each GC bin independently and calculating (%ref_at_gc - %reads_at_gc) and summing all positive values for GC=[50..100]."
+      GC_NC_0_19_ndd:
+        title: "NC GC 0-19 Non dedup"
+        format: "{:,.2f}"
+        scale: "Blues"
+        description: "GCBias: Normalized coverage over quintile of GC content ranging from 0 - 19."
+        placement: 1750
+      GC_NC_20_39_ndd:
+        title: "NC GC 20-39 Non dedup"
+        format: "{:,.2f}"
+        scale: "Blues"
+        description: "GCBias: Normalized coverage over quintile of GC content ranging from 20 - 39."
+        placement: 1760
+      GC_NC_40_59_ndd:
+        title: "NC GC 40-59 Non dedup"
+        format: "{:,.2f}"
+        scale: "Blues"
+        description: "GCBias: Normalized coverage over quintile of GC content ranging from 40 - 59."
+        placement: 1770
+      GC_NC_60_79_ndd:
+        title: "NC GC 60-79 Non dedup"
+        format: "{:,.2f}"
+        scale: "Blues"
+        description: "GCBias: Normalized coverage over quintile of GC content ranging from 60 - 79."
+        placement: 1780
+      GC_NC_80_100_ndd:
+        title: "NC GC 80-100 Non dedup"
+        format: "{:,.2f}"
+        scale: "Blues"
+        description: "GCBias: Normalized coverage over quintile of GC content ranging from 80 - 100."
+        placement: 1790
+      MEDIAN_INSERT_SIZE_ndd:
+        title: "Median Insert Size Non dedup"
+        format: "{:,.0f}"
+        scale: "Purples"
+        description: "InsertSizeMetricAlgo: The MEDIAN insert size of all paired end reads where both ends mapped to the same chromosome."
+        placement: 1800
+      MEDIAN_ABSOLUTE_DEVIATION_ndd:
+        title: "Median Absolute Deviation Non dedup"
+        format: "{:,.1f}"
+        scale: "Purples"
+        description: "InsertSizeMetricAlgo: The median absolute deviation of the distribution. If the distribution is essentially normal then the standard deviation can be estimated as ~1.4826 * MAD."
+        placement: 1810
+      MIN_INSERT_SIZE_ndd:
+        title: "Min Insert Size Non dedup"
+        format: "{:,.0f}"
+        scale: "Purples"
+        description: "InsertSizeMetricAlgo: The minimum measured insert size. This is usually 1 and not very useful as it is likely artifactual."
+        placement: 1820
+      MAX_INSERT_SIZE_ndd:
+        title: "Max Insert Size Non dedup"
+        format: "{:,.0f}"
+        scale: "Purples"
+        description: "InsertSizeMetricAlgo: The maximum measure insert size by alignment. This is usually very high representing either an artifact or possibly the presence of a structural re-arrangement."
+        placement: 1830
+      MEAN_INSERT_SIZE_ndd:
+        title: "Mean Insert Size Non dedup"
+        format: "{:,.0f}"
+        scale: "Purples"
+        description: "InsertSizeMetricAlgo: The mean insert size of the'core' of the distribution. Artefactual outliers in the distribution often cause calculation of nonsensical mean and stdev values. To avoid this the distribution is first trimmed to a 'core' distribution of +/- N median absolute deviations around the median insert size. By default N=10, but this is configurable."
+        placement: 1840
+      STANDARD_DEVIATION_ndd:
+        title: "Standard Deviation Non dedup"
+        format: "{:,.1f}"
+        scale: "Purples"
+        description: "InsertSizeMetricAlgo: Standard deviation of insert sizes over the 'core' of the distribution."
+        placement: 1850
+      READ_PAIRS_ndd:
+        title: "Read Pairs Non dedup"
+        format: "{:,.0f}"
+        scale: "Purples"
+        description: "InsertSizeMetricAlgo: The total number of read pairs that were examined in the entire distribution."
+        placement: 1860
+      PAIR_ORIENTATION_ndd:
+        title: "Pair Orientation Non dedup"
+        format: "{:,.0f}"
+        scale: "Purples"
+        description: "InsertSizeMetricAlgo: The pair orientation of the reads in this data category."
+        placement: 1870
       Flag:
         title: "Flag"
         description: "Flag highlights potential issue processing the biosample."
-        placement: 1060
+        placement: 1880
 
+  merged_mutationalcatalog:
+    plot_type: "table"
+    file_format: "tsv"
+    section_name: "Mutational Signature Catalog"
+    description: "Mutational catalog metrics."
+    only_defined_headers: False
+    sortRows: False
+    pconfig:
+      id: "mutational_signature_catalog"
+    headers:
+      SampleName:
+        title: "Sample Name"
+        description: "Name of the sample"
+        placement: 880
+      Pattern:
+        title: "Pattern"
+        description: "Mutation pattern"
+        placement: 900
+      MutationType:
+        title: "Mutation Type"
+        description: "Type of mutation"
+        placement: 910
+      Count:
+        title: "Count"
+        format: "{:,.0f}"
+        description: "Count of mutations"
+        placement: 920
+      Pattern_Total:
+        title: "Pattern Total"
+        format: "{:,.0f}"
+        description: "Total count for the pattern"
+        placement: 930
+      Normalized_Count:
+        title: "Normalized Count"
+        format: "{:,.6f}"
+        description: "Normalized count of mutations"
+        placement: 940
+      Percentage:
+        title: "Percentage of Normalized Count"
+        format: "{:,.6f}"
+        description: "Percentage of Normalized Count"
+        placement: 950
+      Pattern_Total_Count:
+        title: "Pattern Total Count"
+        format: "{:,.0f}"
+        description: "Total count for the pattern"
+        placement: 960
 
 disable_version_detection: true
 show_analysis_paths: false
 versions_table_group_header: "Pipeline"
 # skip_generalstats: true
+ai_summary: true
 
 report_section_order:
   nf-preseq-pipeline_selected_metrics:
@@ -796,3 +1336,7 @@ report_section_order:
     order: 600
   qualimap:
     order: 500
+
+sp:
+  merged_mutationalcatalog:
+    fn: "merged_mutationalcatalog_mqc.tsv"

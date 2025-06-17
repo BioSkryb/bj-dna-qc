@@ -19,10 +19,10 @@ def printHeader() {
 
 def helpMessage() {
 
-  yellow = "\033[0;33m"
-  blue = "\033[0;34m"
-  white = "\033[0m"
-  red = "\033[0;31m"
+  def yellow = "\033[0;33m"
+  def blue = "\033[0;34m"
+  def white = "\033[0m"
+  def red = "\033[0;31m"
 
   log.info """\
 ${blue}
@@ -77,6 +77,9 @@ ${yellow}
                                     
         --skip_ginkgo       STR     Skip CNV - ginkgo module
                                     DEFAULT: ${params.skip_ginkgo}
+
+        --skip_sigprofile   BOOL    Skip Mutational Signature
+                                    DEFAULT: ${params.skip_sigprofile}
                                     
         --help              BOOL    Display help message
                                     

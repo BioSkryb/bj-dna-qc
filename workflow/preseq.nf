@@ -1,5 +1,3 @@
-nextflow.enable.dsl=2
-import groovy.json.JsonOutput
 /*
 ========================================================================================
     IMPORT MODULES/SUBWORKFLOWS
@@ -11,70 +9,74 @@ import groovy.json.JsonOutput
 // MODULES
 //
 
-include { PUBLISH_INPUT_DATASET_WF } from '../nf-bioskryb-utils/modules/bioskryb/publish_input_dataset/main.nf' addParams(timestamp: params.timestamp)
-include { CUSTOM_FASTQ_MERGE_WF } from '../nf-bioskryb-utils/modules/bioskryb/custom_fastq_merge/main.nf' addParams(timestamp: params.timestamp)
-include { FastpNoQCWF } from '../nf-bioskryb-utils/modules/fastp/main.nf' addParams(timestamp: params.timestamp)
-include { FastpQCWF } from '../nf-bioskryb-utils/modules/fastp/main.nf' addParams(timestamp: params.timestamp)
-include { FASTQC } from '../nf-bioskryb-utils/modules/fastqc/main.nf' addParams(timestamp: params.timestamp)
-include { SEQTK_WF } from '../nf-bioskryb-utils/modules/seqtk/sample/main.nf' addParams(timestamp: params.timestamp)
-include { SENTIEON_BWA_WF } from '../nf-bioskryb-utils/modules/sentieon/bwa/mem/main.nf' addParams(timestamp: params.timestamp)
-include { KRAKEN2_WF } from '../nf-bioskryb-utils/modules/kraken2/main.nf' addParams(timestamp: params.timestamp)
-include { SENTIEON_DRIVER_LOCUSCOLLECTOR_WF } from '../nf-bioskryb-utils/modules/sentieon/driver/locuscollector/main.nf' addParams(timestamp: params.timestamp)
-include { SENTIEON_DRIVER_DEDUP_WF } from '../nf-bioskryb-utils/modules/sentieon/driver/dedup/main.nf' addParams(timestamp: params.timestamp)
-include { SENTIEON_DRIVER_METRICS_WF } from '../nf-bioskryb-utils/modules/sentieon/driver/metrics/main.nf' addParams(timestamp: params.timestamp)
-include { QUALIMAP_BAMQC_WF } from '../nf-bioskryb-utils/modules/qualimap/bamqc/main.nf' addParams(timestamp: params.timestamp)
-include { PRESEQ_BAM2MR_WF } from '../nf-bioskryb-utils/modules/preseq/bam2mr/main.nf' addParams(timestamp: params.timestamp)
-include { PRESEQ_GC_EXTRAP_WF } from '../nf-bioskryb-utils/modules/preseq/gcextrap/main.nf' addParams(timestamp: params.timestamp)
-include { CUSTOM_DATA_PROCESSING_WF } from '../modules/local/custom_data_processing/main.nf' addParams(timestamp: params.timestamp)
-include { CUSTOM_CALCULATE_MAPD } from '../modules/local/custom_calculate_mapd/main.nf' addParams(timestamp: params.timestamp)
-include { CUSTOM_REPORT_WF } from '../modules/local/custom_report/main.nf' addParams(timestamp: params.timestamp)
-include { MULTIQC_WF } from '../nf-bioskryb-utils/modules/multiqc/main.nf' addParams(timestamp: params.timestamp)
-include { REPORT_VERSIONS_WF } from '../nf-bioskryb-utils/modules/bioskryb/report_tool_versions/main.nf' addParams(timestamp: params.timestamp)
-include { BAM_TO_BED_WF } from '../nf-bioskryb-utils/modules/ginkgo/bam_to_bed/main.nf' addParams(timestamp: params.timestamp)
-include { GINKGO_BINUNSORT_WF } from '../nf-bioskryb-utils/modules/ginkgo/binunsort/main.nf' addParams(timestamp: params.timestamp)
-include { GINKGO_SEGMENTATION_R_WF } from '../nf-bioskryb-utils/modules/ginkgo/segmentation_r/main.nf' addParams(timestamp: params.timestamp)
-include { GINKGO_CNV_CALLER_WF } from '../nf-bioskryb-utils/modules/ginkgo/cnvcaller/main.nf' addParams(timestamp: params.timestamp)
-include { GINKO_RDS_TO_FLAT } from '../nf-bioskryb-utils/modules/ginkgo/rds_to_flat/main.nf' addParams(timestamp: params.timestamp)
-include { GINKO_PARSE_OUTPUTS } from '../nf-bioskryb-utils/modules/ginkgo/parse_ginko_outputs/main.nf' addParams(timestamp: params.timestamp)
-include { PARSE_RDS_CNV_METRICS } from '../nf-bioskryb-utils/modules/ginkgo/parse_rds_cnv_metrics/main.nf' addParams(timestamp: params.timestamp)
-include { BAM_LORENZ_COVERAGE_WF } from '../nf-bioskryb-utils/modules/bam_lorenz_coverage/main.nf' addParams(timestamp: params.timestamp)
-include { COUNT_READS_FASTQ_WF } from '../nf-bioskryb-utils/modules/bioskryb/custom_read_counts/main.nf' addParams(timestamp: params.timestamp)
+include { PUBLISH_INPUT_DATASET_WF } from '../nf-bioskryb-utils/modules/bioskryb/publish_input_dataset/main.nf'
+include { CUSTOM_FASTQ_MERGE_WF } from '../nf-bioskryb-utils/modules/bioskryb/custom_fastq_merge/main.nf'
+include { FastpNoQCWF; FastpQCWF } from '../nf-bioskryb-utils/modules/fastp/main.nf'
+include { FASTQC } from '../nf-bioskryb-utils/modules/fastqc/main.nf'
+include { SEQTK_WF } from '../nf-bioskryb-utils/modules/seqtk/sample/main.nf'
+include { SENTIEON_BWA_WF } from '../nf-bioskryb-utils/modules/sentieon/bwa/mem/main.nf'
+include { KRAKEN2_WF } from '../nf-bioskryb-utils/modules/kraken2/main.nf'
+include { SENTIEON_DRIVER_LOCUSCOLLECTOR_WF } from '../nf-bioskryb-utils/modules/sentieon/driver/locuscollector/main.nf'
+include { SENTIEON_DRIVER_DEDUP_WF } from '../nf-bioskryb-utils/modules/sentieon/driver/dedup/main.nf'
+include { SENTIEON_DRIVER_METRICS_WF as SENTIEON_DRIVER_METRICS_WITH_DEDUP_WF } from '../nf-bioskryb-utils/modules/sentieon/driver/metrics/main.nf'
+include { SENTIEON_DRIVER_METRICS_WF as SENTIEON_DRIVER_METRICS_WITH_NONDEDUP_WF } from '../nf-bioskryb-utils/modules/sentieon/driver/metrics/main.nf'
+include { QUALIMAP_BAMQC_WF } from '../nf-bioskryb-utils/modules/qualimap/bamqc/main.nf'
+include { PRESEQ_SUBWF as PRESEQ_SUBWF} from '../nf-bioskryb-utils/modules/preseq/main.nf'
+include { PRESEQ_SUBWF as PRESEQ_SUBWF_NONDEDUP} from '../nf-bioskryb-utils/modules/preseq/main.nf'
+include { CUSTOM_DATA_PROCESSING_WF } from '../modules/local/custom_data_processing/main.nf'
+include { CUSTOM_CALCULATE_MAPD } from '../modules/local/custom_calculate_mapd/main.nf'
+include { CUSTOM_REPORT_WF } from '../modules/local/custom_report/main.nf'
+include { MULTIQC_WF } from '../nf-bioskryb-utils/modules/multiqc/main.nf'
+include { REPORT_VERSIONS_WF } from '../nf-bioskryb-utils/modules/bioskryb/report_tool_versions/main.nf'
+include { GINKO_WF } from '../nf-bioskryb-utils/subworkflows/cnv_ginko/main.nf'
+include { BAM_LORENZ_COVERAGE_WF } from '../nf-bioskryb-utils/modules/bam_lorenz_coverage/main.nf'
+include { COUNT_READS_FASTQ_WF } from '../nf-bioskryb-utils/modules/bioskryb/custom_read_counts/main.nf'
 
 
-params.reference         = params.genomes [ params.genome ] [ 'reference' ]
-params.intervals         = params.genomes [ params.genome ] [ 'base_metrics_intervals' ]
-params.krakendb          = params.genomes [ params.genome ] [ 'kraken2_db' ]
-params.blacklist_regions = params.genomes [ params.genome ] [ 'blacklist_regions' ]
 
 workflow PRESEQ_WF {
     
     take:
-        ch_publish_dir
-        ch_enable_publish
-        ch_disable_publish
         ch_reads
         ch_input_csv
         ch_dummy_file
         ch_dummy_file2
         ch_mode
-        ch_multiqc_config
-        ch_project_name
+        ch_genome
+        ch_reference
+        ch_intervals
         ch_bin_size
         ch_min_ploidy
         ch_max_ploidy
         ch_min_bin_width
         ch_is_haplotype
-        ch_reference
-        ch_intervals
         ch_binref
         ch_gcref
         ch_boundsref_file
         ch_seqtk_sample_seed
         ch_min_reads
+        ch_n_reads
+        ch_read_length
+        ch_two_color_chemistry
+        ch_adapter_sequence
+        ch_adapter_sequence_r2
+        ch_krakendb
+        ch_tmp_dir
+        ch_mapd_bin_size
+        ch_blacklist_regions
+        ch_skip_kraken
+        ch_skip_fastqc
+        ch_skip_qualimap
+        ch_skip_ginkgo
+        ch_skip_mapd
+        ch_publish_dir
+        ch_timestamp
+        ch_enable_publish
+        ch_disable_publish
     
     main:
     
-        if ( params.input_csv ) {
+        if ( ch_input_csv ) {
             
             PUBLISH_INPUT_DATASET_WF (
                                         ch_input_csv,
@@ -88,27 +90,28 @@ workflow PRESEQ_WF {
 
         COUNT_READS_FASTQ_WF (
                                 ch_reads,
-                                params.publish_dir,
-                                params.enable_publish
+                                ch_publish_dir,
+                                ch_enable_publish
                             )
         COUNT_READS_FASTQ_WF.out.read_counts
-        .map { sample_id, files, read_count -> 
-            [sample_id, files, read_count.toInteger()]
+        .map { sample_id, files, read_count_file -> 
+            def read_count = read_count_file.text.trim().toLong()
+            [sample_id, files, read_count]
         }
-        .branch {
-            small: it[2] < ch_min_reads
-            large: it[2] >= ch_min_reads
+        .branch { read ->
+            small: read[2] < ch_min_reads
+            large: read[2] >= ch_min_reads
         }
         .set { branched_reads }
 
-        ch_reads_with_n_reads = branched_reads.large.map { biosampleName, reads, read_count ->
-            return [ biosampleName, reads, params.n_reads ]
+        ch_reads_with_n_reads = branched_reads.large.map { biosampleName, reads, _read_count ->
+            return [ biosampleName, reads, ch_n_reads ]
         }
 
         SEQTK_WF (
                         ch_reads_with_n_reads,
                         false,
-                        params.read_length,
+                        ch_read_length,
                         ch_seqtk_sample_seed,
                         ch_publish_dir,
                         ch_disable_publish
@@ -117,25 +120,25 @@ workflow PRESEQ_WF {
                      
         FastpNoQCWF ( 
                 SEQTK_WF.out.reads, 
-                params.two_color_chemistry,
-                params.adapter_sequence,
-                params.adapter_sequence_r2,
+                ch_two_color_chemistry,
+                ch_adapter_sequence,
+                ch_adapter_sequence_r2,
                 ch_publish_dir,
                 ch_enable_publish
               )
               
         ch_fastp_report = FastpNoQCWF.out.report
         
-        FastpNoQCWF.out.reads.ifEmpty{ exit 1, "ERROR: subsample of fastq files resulted in fastq files < 10.KB in size." }
+        // FastpNoQCWF.out.reads.ifEmpty{ error "ERROR: subsample of fastq files resulted in fastq files < 10.KB in size." }
               
         ch_kraken2_report = Channel.empty()
         ch_kraken2_version = Channel.empty()
 
-        if ( !params.skip_kraken ) {                         
+        if ( !ch_skip_kraken ) {                         
     
             KRAKEN2_WF (
                         FastpNoQCWF.out.reads,
-                        params.krakendb,
+                        ch_krakendb,
                         ch_publish_dir,
                         ch_enable_publish
                       )
@@ -147,7 +150,7 @@ workflow PRESEQ_WF {
         ch_fastqc_report = Channel.empty()
         ch_fastqc_version = Channel.empty()
         
-        if ( !params.skip_fastqc && params.instrument != 'NovaSeq' ) {
+        if ( !ch_skip_fastqc ) {
             FASTQC (
                         FastpNoQCWF.out.reads,
                         ch_publish_dir,
@@ -160,14 +163,14 @@ workflow PRESEQ_WF {
         
         SENTIEON_BWA_WF ( 
                             FastpNoQCWF.out.reads,
-                            params.reference,
+                            ch_reference,
                             ch_publish_dir,
                             ch_disable_publish
                          )
         
         SENTIEON_DRIVER_LOCUSCOLLECTOR_WF ( 
                                             SENTIEON_BWA_WF.out.bam,
-                                            params.reference,
+                                            ch_reference,
                                             ch_publish_dir,
                                             ch_disable_publish
                                       )
@@ -176,7 +179,7 @@ workflow PRESEQ_WF {
         
         SENTIEON_DRIVER_DEDUP_WF ( 
                                 combine_outputs_a,
-                                params.reference,
+                                ch_reference,
                                 ch_publish_dir,
                                 ch_enable_publish
                               )
@@ -184,20 +187,30 @@ workflow PRESEQ_WF {
         custom_output = SENTIEON_DRIVER_DEDUP_WF.out.bam.combine( ch_dummy_file )
         
         SENTIEON_DRIVER_DEDUP_WF.out.bam
-            .collectFile( name: "bam_files.txt", newLine: true, sort: { it[0] }, storeDir: "${params.tmp_dir}" )
-                { it[0] + "\t" + "${params.publish_dir}_${params.timestamp}/secondary_analyses/alignment/output/" + it[1].getName() }
-
+            .collectFile( name: "bam_files.txt", newLine: true, sort: { it[0] }, storeDir: "${ch_tmp_dir}" )
+                { it[0] + "\t" + "${ch_publish_dir}_${ch_timestamp}/secondary_analyses/alignment/output/" + it[1].getName() }
         
-        
-        SENTIEON_DRIVER_METRICS_WF ( 
+        SENTIEON_DRIVER_METRICS_WITH_DEDUP_WF ( 
                                       custom_output,
-                                      params.reference,
-                                      params.intervals,
+                                      ch_reference,
+                                      ch_intervals,
                                       ch_dummy_file2,
                                       ch_mode,
+                                      "dedup",
                                       ch_publish_dir,
                                       ch_enable_publish
                                    )
+
+        SENTIEON_DRIVER_METRICS_WITH_NONDEDUP_WF ( 
+                                SENTIEON_BWA_WF.out.bam.combine( ch_dummy_file ),
+                                ch_reference,
+                                ch_intervals,
+                                ch_dummy_file2,
+                                ch_mode,
+                                "nondedup",
+                                ch_publish_dir,
+                                ch_enable_publish
+                            )
         
         ch_bam_lorenz_coverage_stats = Channel.empty()
         ch_bam_lorenz_coverage_version = Channel.empty()
@@ -215,7 +228,7 @@ workflow PRESEQ_WF {
         ch_qualimap_report = Channel.empty()
         ch_qualimap_version = Channel.empty()
 
-        if ( !params.skip_qualimap ) {            
+        if ( !ch_skip_qualimap ) {            
         
             QUALIMAP_BAMQC_WF ( 
                                 SENTIEON_DRIVER_DEDUP_WF.out.bam,
@@ -226,24 +239,29 @@ workflow PRESEQ_WF {
             ch_qualimap_version = QUALIMAP_BAMQC_WF.out.version
         }
         
-        PRESEQ_BAM2MR_WF ( 
+        PRESEQ_SUBWF ( 
                             SENTIEON_DRIVER_DEDUP_WF.out.bam,
+                            "dedup",
+                            ch_publish_dir,
+                            ch_disable_publish
+                         )
+
+        PRESEQ_SUBWF_NONDEDUP ( 
+                            SENTIEON_BWA_WF.out.bam,
+                            "non_dedup",
                             ch_publish_dir,
                             ch_disable_publish
                          )
         
-        PRESEQ_GC_EXTRAP_WF ( 
-                                PRESEQ_BAM2MR_WF.out.mr,
-                                ch_publish_dir,
-                                ch_disable_publish
-                            )
-        
         combine_outputs_b = SENTIEON_DRIVER_DEDUP_WF.out.bam
                                                     .join(SENTIEON_DRIVER_DEDUP_WF.out.metrics
-                                                                                    .join(SENTIEON_DRIVER_METRICS_WF.out.metrics_tuple
-                                                                                                                    .join(PRESEQ_GC_EXTRAP_WF.out.coverage)
+                                                    .join(SENTIEON_DRIVER_METRICS_WITH_DEDUP_WF.out.metrics_tuple
+                                                    .join(SENTIEON_DRIVER_METRICS_WITH_NONDEDUP_WF.out.metrics_tuple
+                                                    .join(PRESEQ_SUBWF.out.coverage)
+                                                    .join(PRESEQ_SUBWF_NONDEDUP.out.coverage)
                                                                                             )
                                                             )
+                                                    )
         combine_outputs_b.view()
      
         
@@ -252,75 +270,31 @@ workflow PRESEQ_WF {
         ch_ginkgo_version = Channel.empty()
         ch_ginkgo_stats = Channel.empty()
         ch_bedtools_version = Channel.empty()
-        if( !params.skip_ginkgo && (params.genome == "GRCh38" || params.genome == "GRCm39") ) {
-            BAM_TO_BED_WF(
-                            SENTIEON_DRIVER_DEDUP_WF.out.bam,
-                            ch_bin_size,
-                            ch_publish_dir,
-                            ch_disable_publish
-                         )
-            ch_bedtools_version = BAM_TO_BED_WF.out.version
+        if( !ch_skip_ginkgo && (ch_genome == "GRCh38" || ch_genome == "GRCm39" || ch_genome == "ARSUCD2") ) {
+            GINKO_WF(
+                    SENTIEON_DRIVER_DEDUP_WF.out.bam,
+                    ch_bin_size,
+                    ch_binref,
+                    ch_gcref,
+                    ch_boundsref_file,
+                    ch_min_ploidy,
+                    ch_max_ploidy,
+                    ch_min_bin_width,
+                    ch_is_haplotype,
+                    ch_publish_dir,
+                    ch_enable_publish,
+                    ch_disable_publish
+            )
 
-            GINKGO_BINUNSORT_WF (
-                                 BAM_TO_BED_WF.out.bed_only,
-                                 ch_binref.collect(),
-                                 ch_bin_size,
-                                 ch_publish_dir,
-                                 ch_disable_publish
-                               )
-                               
-            ch_mapped_files = GINKGO_BINUNSORT_WF.out.map{it -> it.last()}.collect()
+            ch_ginkgo_version = GINKO_WF.out.ginkgo_version
+            ch_ginkgo_stats = GINKO_WF.out.ginkgo_stats
+            ch_bedtools_version = GINKO_WF.out.bedtools_version
 
-            GINKGO_SEGMENTATION_R_WF (
-                                      ch_mapped_files,
-                                      ch_binref.collect(),
-                                      ch_gcref.collect(),
-                                      ch_boundsref_file.collect(),
-                                      ch_min_ploidy,
-                                      ch_max_ploidy,
-                                      ch_min_bin_width,
-                                      ch_bin_size,
-                                      ch_is_haplotype,
-                                      ch_publish_dir,
-                                      ch_enable_publish
-                                     )
-            GINKGO_CNV_CALLER_WF (
-                                    GINKGO_SEGMENTATION_R_WF.out.segcopy,
-                                    ch_bin_size,
-                                    ch_publish_dir,
-                                    ch_enable_publish
-                                 )
-                                 
-            GINKO_RDS_TO_FLAT(
-                              GINKGO_SEGMENTATION_R_WF.out.RDS,
-                              ch_bin_size,
-                              ch_publish_dir,
-                              ch_enable_publish
-                            )
-                            
-            GINKO_PARSE_OUTPUTS(
-                                GINKO_RDS_TO_FLAT.out.tsvs,
-                                GINKGO_CNV_CALLER_WF.out.cnvs,
-                                ch_binref.collect(),
-                                ch_bin_size,
-                                ch_publish_dir,
-                                ch_enable_publish
-                            )
-                            
-            PARSE_RDS_CNV_METRICS (
-            
-                            GINKGO_SEGMENTATION_R_WF.out.RDS,
-                            ch_publish_dir,
-                            ch_enable_publish
-        
-                            )
-            ch_ginkgo_version = GINKGO_CNV_CALLER_WF.out.version
-            ch_ginkgo_stats = PARSE_RDS_CNV_METRICS.out.collect()
         }
         
         CUSTOM_DATA_PROCESSING_WF ( 
                                   combine_outputs_b,
-                                  params.reference,
+                                  ch_reference,
                                   ch_publish_dir,
                                   ch_disable_publish
                                 )
@@ -328,13 +302,13 @@ workflow PRESEQ_WF {
         ch_custom_calculate_mapd_metrics = Channel.empty()
         ch_custom_calculate_mapd_version = Channel.empty()
         
-        if ( !params.skip_mapd ) {
+        if ( !ch_skip_mapd ) {
             
             CUSTOM_CALCULATE_MAPD ( 
                                         SENTIEON_DRIVER_DEDUP_WF.out.bam,
-                                        params.mapd_bin_size,
-                                        params.blacklist_regions,
-                                        params.reference,
+                                        ch_mapd_bin_size,
+                                        ch_blacklist_regions,
+                                        ch_reference,
                                         ch_publish_dir,
                                         ch_disable_publish
                                      )
@@ -365,10 +339,10 @@ workflow PRESEQ_WF {
                             .combine(SENTIEON_BWA_WF.out.version.take(1))
                             .combine(SENTIEON_DRIVER_LOCUSCOLLECTOR_WF.out.version.take(1))
                             .combine(SENTIEON_DRIVER_DEDUP_WF.out.version.take(1))
-                            .combine(SENTIEON_DRIVER_METRICS_WF.out.version.take(1))
+                            .combine(SENTIEON_DRIVER_METRICS_WITH_DEDUP_WF.out.version.take(1))
                             .combine(ch_qualimap_version.take(1).ifEmpty([]) )
-                            .combine(PRESEQ_BAM2MR_WF.out.version.take(1))
-                            .combine(PRESEQ_GC_EXTRAP_WF.out.version.take(1))
+                            .combine(PRESEQ_SUBWF.out.preseqBam2mr_version.take(1))
+                            .combine(PRESEQ_SUBWF.out.preseqExtrap_version.take(1))
                             .combine(ch_kraken2_version.take(1).ifEmpty([]) )
                             .combine(ch_bam_lorenz_coverage_version.take(1).ifEmpty([]))
                             .combine((ch_ginkgo_version ?: Channel.empty()).ifEmpty([]))
@@ -386,38 +360,18 @@ workflow PRESEQ_WF {
                         .combine( ch_kraken2_report.collect().ifEmpty([]) )
                         .combine( ch_qualimap_report.collect().ifEmpty([]) )
                         .combine( REPORT_VERSIONS_WF.out.versions.collect().ifEmpty([]))
-
-        params_meta = [
-            session_id: workflow.sessionId,
-            read_length: params.read_length,
-            n_reads: params.n_reads,
-            genome: params.genome,
-            instrument: params.instrument,
-            skip_fastqc: params.skip_fastqc,
-            skip_kraken: params.skip_kraken,
-            skip_qualimap: params.skip_qualimap,
-            skip_CNV: params.skip_ginkgo
-        ]
-
-        if (!params.skip_ginkgo) {
-            params_meta['bin_size'] = params.bin_size
-            params_meta['min_ploidy'] = params.min_ploidy
-            params_meta['max_ploidy'] = params.max_ploidy
-        }
-                                      
-        MULTIQC_WF ( 
-                  collect_mqc,
-                  params_meta,
-                  params.multiqc_config,
-                  ch_publish_dir,
-                  ch_enable_publish
-                )
-        
-        MULTIQC_WF.out.report.ifEmpty{ exit 1, "ERROR: cannot generate any MULTIQC Report." }
+    
+    emit:
+        dedup_bam = SENTIEON_DRIVER_DEDUP_WF.out.bam
+        multiqc_input = collect_mqc
+        // params_meta = params_meta
   
 }
 
+
+// OnComplete
 workflow.onComplete {
+    
     output                          = [:]
     output["pipeline_run_name"]     = workflow.runName
     output["pipeline_name"]         = workflow.manifest.name
@@ -434,13 +388,16 @@ workflow.onComplete {
         output["output"]["bam"][sample_name]["bam"] = bam_path
     }
     
-    def output_json = JsonOutput.toJson(output)
-    def output_json_pretty = JsonOutput.prettyPrint(output_json)
+    def output_json = groovy.json.JsonOutput.toJson(output)
+    def output_json_pretty = groovy.json.JsonOutput.prettyPrint(output_json)
     File outputfile = new File("$params.tmp_dir/output.json")
     outputfile.write(output_json_pretty)
     println(output_json_pretty)
+
+    println( "\nPipeline completed successfully.\n\n" )
 }
 
+// OnError
 workflow.onError {
     
     output                          = [:]
@@ -452,8 +409,8 @@ workflow.onError {
     output["output"]["bam"]         = [:]
     output["output"]["vcf"]         = [:]
     
-    def output_json = JsonOutput.toJson(output)
-    def output_json_pretty = JsonOutput.prettyPrint(output_json)
+    def output_json = groovy.json.JsonOutput.toJson(output)
+    def output_json_pretty = groovy.json.JsonOutput.prettyPrint(output_json)
     File outputfile = new File("$params.tmp_dir/output.json")
     outputfile.write(output_json_pretty)
     println(output_json_pretty)
@@ -483,7 +440,6 @@ workflow.onError {
     if ( "${params.email_on_fail}" && workflow.exitStatus != 0 ) {
         sendMail(to: "${params.email_on_fail}", subject: subject, body: msg)
     }
+
+    println( "\nPipeline failed.\n\n" )
 }
-
-
-
