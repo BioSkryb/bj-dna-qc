@@ -99,7 +99,7 @@ example-
 ```
 git clone https://github.com/BioSkryb/bj-dna-qc.git
 cd bj-dna-qc
-nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv --max_cpus 4 --max_memory 14.GB
+nextflow run main.nf --input_csv $PWD/tests/data/inputs/input.csv --max_cpus 4 --max_memory 14.GB --publish_dir test
 ```
 
 **Input Options**
@@ -124,6 +124,8 @@ This pipeline includes several optional modules. You can choose to include or ex
 - `--skip_fastqc`: Set this to `true` to exclude the fastqc module. By default, it is set to `true`.
 - `--skip_ginkgo`: Set this to `true` to exclude the CNV - ginkgo module. By default, it is set to `true`.
 - `--skip_mapd`: Set this to `true` to exclude the MAPD module. By default, it is set to `false`.
+- `--skip_sigprofile` : Set this to `false` to include the Mutational Signature profile module. By default, it is set to `true`.
+        The mutational signature runs require additional metadata in the input.csv file under the "groups" column. Add the group name for samples that need to be combined by the pseudobulk process for mutational signature profiling. This field can be left blank for other samples.
 
 **Outputs**
 
@@ -179,6 +181,9 @@ The pipeline saves its output files in the designated "publish_dir" directory. T
                                     
         --skip_ginkgo       STR     Skip CNV - ginkgo module
                                     DEFAULT: true
+
+        --skip_sigprofile   STR     Skip Mutational Signature
+                                    DEFAULT: false
                                     
         --help              BOOL    Display help message
 ```

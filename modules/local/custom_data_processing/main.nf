@@ -7,7 +7,7 @@ process CUSTOM_DATA_PROCESSING {
     
     
     input:
-    tuple val(sample_name), path(bam), path(bai), path(dedup_metrics), path(metrics), path(preseq_cov)
+    tuple val(sample_name), path(bam), path(bai), path(dedup_metrics), path(metrics_withdedup), path(metrics_withnondedup), path(preseq_cov), path(NonDeduppreseq_cov)
     path fasta_ref
     val(publish_dir)
     val(enable_publish)
@@ -26,7 +26,9 @@ process CUSTOM_DATA_PROCESSING {
     . /opt/sentieon/cloud_auth.sh no-op
 
     
-    cat ${sample_name}.cov_sentieonmetrics.sample_interval_summary | tail -n+2 | sed 's|:|\t|g' | sed 's|-|\t|g' | cut -f1-4 > ${sample_name}_chromosome_read_proportions.tsv
+    cat ${sample_name}.dedup.cov_sentieonmetrics.sample_interval_summary | tail -n+2 | sed 's|:|\t|g' | sed 's|-|\t|g' | cut -f1-4 > ${sample_name}.dedup_chromosome_read_proportions.tsv
+    
+    cat ${sample_name}.nondedup.cov_sentieonmetrics.sample_interval_summary | tail -n+2 | sed 's|:|\t|g' | sed 's|-|\t|g' | cut -f1-4 > ${sample_name}.nondedup_chromosome_read_proportions.tsv
     
     cat ${sample_name}.dedup.alignmentstat_sentieonmetrics.txt | grep "^PAIR" | cut -f 7 > ${sample_name}_pct_aligned
     
@@ -40,7 +42,8 @@ process CUSTOM_DATA_PROCESSING {
 
 
     
-    PRESEQ_COUNT=\$(cat ${sample_name}_preseq_cov.txt)
+    PRESEQ_COUNT=\$(cat ${sample_name}_dedup_preseq_cov.txt)
+    PRESEQ_COUNT_NONDEDUP=\$(cat ${sample_name}_non_dedup_preseq_cov.txt)
     PRESEQ_TOTAL=\$(cat ${sample_name}_preseq_read_count)
     
     N_PE_TRIMMED_ALIGNED_READS=\$(cat ${sample_name}_n_pe_trimmed_aligned)
@@ -48,14 +51,20 @@ process CUSTOM_DATA_PROCESSING {
     
     
     parse_metrics_files.py \
-      ${sample_name}.wgsmetricsalgo.sentieonmetrics.txt \
+      ${sample_name}.dedup.wgsmetricsalgo.sentieonmetrics.txt \
+      ${sample_name}.nondedup.wgsmetricsalgo.sentieonmetrics.txt \
       ${sample_name}.dedup_sentieonmetrics.txt \
       ${sample_name}.dedup.alignmentstat_sentieonmetrics.txt \
-      ${sample_name}_chromosome_read_proportions.tsv \
+      ${sample_name}.nondedup.alignmentstat_sentieonmetrics.txt \
+      ${sample_name}.dedup_chromosome_read_proportions.tsv \
+      ${sample_name}.nondedup_chromosome_read_proportions.tsv \
       ${sample_name}_pct_aligned \
-      ${sample_name}.gcbias_summary.sentieonmetrics.txt \
-      ${sample_name}.insertsizemetricalgo.sentieonmetrics.txt \
+      ${sample_name}.dedup.gcbias_summary.sentieonmetrics.txt \
+      ${sample_name}.nondedup.gcbias_summary.sentieonmetrics.txt \
+      ${sample_name}.dedup.insertsizemetricalgo.sentieonmetrics.txt \
+      ${sample_name}.nondedup.insertsizemetricalgo.sentieonmetrics.txt \
       \$PRESEQ_COUNT \
+      \$PRESEQ_COUNT_NONDEDUP \
       ${sample_name} \
       \$N_PE_TRIMMED_ALIGNED_READS \
       \$PHI29_CHIMERAS \

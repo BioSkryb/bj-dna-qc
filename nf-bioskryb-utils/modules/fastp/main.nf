@@ -21,7 +21,7 @@ process FASTP {
     path("fastp_version.yml"), emit: version
 
     script:
-  
+    def args = task.ext.args ?: '' 
     opts = []
     
     if (reads.size() == 2){ 
@@ -44,8 +44,7 @@ process FASTP {
 
             }else{
         
-            opts.add("--adapter_sequence=${adapter_sequence}")
-            opts.add("--adapter_sequence_r2=${adapter_sequence_r2}")
+            opts.add(args)
             
             }
         }
@@ -68,8 +67,7 @@ process FASTP {
 
         }else{
         
-            opts.add("--adapter_sequence=${adapter_sequence}")
-            opts.add("--adapter_sequence_r2=${adapter_sequence_r2}")
+            opts.add(args)
             
             }
     
@@ -211,9 +209,10 @@ workflow FastpFull_WF{
 
 workflow{
     ch_reads = Channel.fromFilePairs( params.reads , size: -1 , checkExists: true )
-                            .map { tag, pair -> subtags = (tag =~ /(.*)_(S\d+)_(L0+\d+)/)[0]; [subtags[1], pair] }
+                            .map { tag, pair -> 
+                            def subtags = (tag =~ /(.*)_(S\d+)_(L0+\d+)/)[0]; [subtags[1], pair] }
                             
-    FastpWF(
+    FastpFull_WF(
             ch_reads,
             params.two_color_chemistry,
             params.adapter_sequence,
