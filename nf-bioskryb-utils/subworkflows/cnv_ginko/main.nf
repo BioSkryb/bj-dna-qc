@@ -87,6 +87,8 @@ workflow GINKO_WF{
         METRICS = PARSE_RDS_CNV_METRICS.out
         CNVS = GINKO_PARSE_OUTPUTS.out.tsvs
         graph = GINKGO_SEGMENTATION_R.out.jpeg
+        RDS = GINKGO_SEGMENTATION_R.out.RDS
+        SEGCOPY = GINKGO_SEGMENTATION_R.out.segcopy
         ginkgo_version = GINKGO_CNV_CALLER.out.version
         ginkgo_stats = PARSE_RDS_CNV_METRICS.out.collect()
         bedtools_version = BAM_TO_BED.out.version

@@ -16,6 +16,8 @@ process CUSTOM_REPORT {
 
     output:
     path "nf-preseq-pipeline*", emit: mqc
+    path "nf-preseq-pipeline_all_metrics*", emit: all_metrics
+    path "nf-preseq-pipeline_selected_metrics*", emit: selected_metrics
     path("custom_report_version.yml"), emit: version
 
     
@@ -47,6 +49,8 @@ workflow CUSTOM_REPORT_WF{
                       )
     emit:
         mqc = CUSTOM_REPORT.out.mqc
+        all_metrics = CUSTOM_REPORT.out.all_metrics
+        selected_metrics = CUSTOM_REPORT.out.selected_metrics
         version = CUSTOM_REPORT.out.version
 }
 
