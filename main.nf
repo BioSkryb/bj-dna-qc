@@ -87,6 +87,7 @@ workflow {
             params.skip_mapd,
             params.publish_dir,
             params.timestamp,
+            params.plot_qc_config,
             params.enable_publish,
             params.disable_publish,
         )

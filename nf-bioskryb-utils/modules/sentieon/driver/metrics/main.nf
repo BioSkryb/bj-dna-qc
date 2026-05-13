@@ -157,7 +157,7 @@ workflow {
         ch_bam = ch_bam_raw.combine(ch_dummy_file)
     } else if(params.input_csv != "") {
         ch_bam_raw = Channel.fromPath(params.input_csv).splitCsv(header:true)
-                                .map { row -> [ row.sampleId, row.bam, row.bam + ".bai" ] }
+                                .map { row -> [ row.biosampleName, row.bam, row.bam + ".bai" ] }
         ch_bam = ch_bam_raw.combine(ch_dummy_file)
     }
     

@@ -31,6 +31,7 @@ include { REPORT_VERSIONS_WF } from '../nf-bioskryb-utils/modules/bioskryb/repor
 include { GINKO_WF } from '../nf-bioskryb-utils/subworkflows/cnv_ginko/main.nf'
 include { BAM_LORENZ_COVERAGE_WF } from '../nf-bioskryb-utils/modules/bam_lorenz_coverage/main.nf'
 include { COUNT_READS_FASTQ_WF } from '../nf-bioskryb-utils/modules/bioskryb/custom_read_counts/main.nf'
+include { QC_PLOTS_WF } from '../nf-bioskryb-utils/subworkflows/qc_plots/main.nf'
 
 
 
@@ -71,6 +72,7 @@ workflow PRESEQ_WF {
         ch_skip_mapd
         ch_publish_dir
         ch_timestamp
+        ch_qcplot_config_file
         ch_enable_publish
         ch_disable_publish
     
@@ -262,7 +264,7 @@ workflow PRESEQ_WF {
                                                                                             )
                                                             )
                                                     )
-        combine_outputs_b.view()
+        // combine_outputs_b.view()
      
         
         
@@ -299,9 +301,9 @@ workflow PRESEQ_WF {
                                   ch_disable_publish
                                 )
 
-        ch_custom_calculate_mapd_metrics = Channel.empty()
-        ch_custom_calculate_mapd_version = Channel.empty()
-        
+        ch_custom_calculate_mapd_metrics = channel.empty()
+        ch_custom_calculate_mapd_version = channel.empty()
+
         if ( !ch_skip_mapd ) {
             
             CUSTOM_CALCULATE_MAPD ( 
@@ -332,7 +334,6 @@ workflow PRESEQ_WF {
                             ch_enable_publish
                         )
         
-
         ch_tool_versions = SEQTK_WF.out.version.take(1).ifEmpty([])
                             .combine(FastpNoQCWF.out.version.take(1))
                             .combine(ch_fastqc_version.take(1).ifEmpty([]))
@@ -353,14 +354,45 @@ workflow PRESEQ_WF {
                             ch_publish_dir,
                             ch_enable_publish
                           )
+        qc_plots_composition_jpg = channel.empty()
+        qc_plots_cnv_quadrants_jpg = channel.empty()
+        ch_custom_report_cnv = channel.empty()
+        
+        // Run the QC_Plots for all Ginkgo runs
+        if( !ch_skip_ginkgo && (ch_genome == "GRCh38" || ch_genome == "GRCm39" || ch_genome == "ARSUCD2") ) {
+            QC_PLOTS_WF(
+                GINKO_WF.out.RDS,
+                GINKO_WF.out.SEGCOPY,
+                CUSTOM_REPORT_WF.out.all_metrics,
+                CUSTOM_REPORT_WF.out.selected_metrics,
+                ch_input_csv,
+                ch_qcplot_config_file,
+                ch_publish_dir,
+                ch_enable_publish
+            )
+            
+            qc_plots_composition_jpg = QC_PLOTS_WF.out.composition_jpg.ifEmpty([])
+            qc_plots_cnv_quadrants_jpg = QC_PLOTS_WF.out.cnv_quadrants_jpg.ifEmpty([])
+            ch_custom_report_cnv = QC_PLOTS_WF.out.allmetrics_with_cnv.mix( QC_PLOTS_WF.out.selectedmetrics_with_cnv ).collect()
+            ch_fallback_report = CUSTOM_REPORT_WF.out.mqc
+            // Combine both and use the first available
+            ch_custom_report = ch_custom_report_cnv.concat(ch_fallback_report).first() // Use CNV-enhanced report if available, otherwise fall back to original custom report
+        }
+        else {
+            ch_custom_report = CUSTOM_REPORT_WF.out.mqc
+        }
 
-        collect_mqc = CUSTOM_REPORT_WF.out.mqc
+        // Only include QC plots outputs if they exist (i.e., QC_PLOTS_WF succeeded)
+        collect_mqc = ch_custom_report
                         .combine( ch_fastp_report.collect() )
                         .combine( ch_fastqc_report.collect().ifEmpty([]) )
                         .combine( ch_kraken2_report.collect().ifEmpty([]) )
                         .combine( ch_qualimap_report.collect().ifEmpty([]) )
                         .combine( REPORT_VERSIONS_WF.out.versions.collect().ifEmpty([]))
-    
+                        .combine(qc_plots_composition_jpg.collect().ifEmpty([]))
+                        .combine(qc_plots_cnv_quadrants_jpg.collect().ifEmpty([]))
+
+
     emit:
         dedup_bam = SENTIEON_DRIVER_DEDUP_WF.out.bam
         multiqc_input = collect_mqc

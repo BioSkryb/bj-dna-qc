@@ -23,26 +23,38 @@ process CUSTOM_BAM_SUBSAMPLE {
     #! /bin/bash
     set +u
     
-    samtools view -f 0x2 --threads $task.cpus ${bam} > samtools_paired.bam
-    export PROPERLY_ALIGNED=\$(wc -l samtools_paired.bam | grep -Eo '[0-9]{1,}')
+    # Count properly aligned reads using best practices flags
+    # -f 0x2: properly paired reads
+    # -F excludes: secondary (0x100), QC-fail (0x200), duplicates (0x400), supplementary (0x800).
+    export PROPERLY_ALIGNED=\$(samtools view -c -f 0x2 -F 0xF00 --threads $task.cpus ${bam})
     
-    if [ ${subsample} -gt \$PROPERLY_ALIGNED ]
-    then
-        export PROPORTION=100.9999
+    # Calculate fraction needed for subsampling
+    export TARGET_READS=${subsample}
+    frac=\$(awk -v t=\$TARGET_READS -v c=\$PROPERLY_ALIGNED 'BEGIN{p=t/c; if(p>1) p=1; printf("%.6f", p)}')
+    
+    echo "Target reads: \$TARGET_READS | Properly aligned reads: \$PROPERLY_ALIGNED | Fraction: \$frac"
+    
+    # Handle subsampling based on fraction
+    if [ "\$frac" = "1.000000" ]; then
+        # No subsampling needed - copy all properly aligned reads
+        samtools view -@ $task.cpus -b -f 0x2 -F 0xF00 ${bam} -o ${sample_name}_${subsample}_unsorted.bam
     else
-	    export PROPORTION=\$(awk -v pf_reads_aligned=\$PROPERLY_ALIGNED -v sample_level=${subsample} 'BEGIN { mratio=sample_level/(pf_reads_aligned); printf(10);printf(mratio,10f) }' )
+        # Subsample with reproducible seed
+        # Remove leading "0." before concatenating with seed for reproducibility
+        frac_digits=\${frac#0}
+        samtools view -@ $task.cpus -b -f 0x2 -F 0xF00 -s 42\$frac_digits ${bam} -o ${sample_name}_${subsample}_unsorted.bam
     fi
-    echo "\$PROPORTION | \$PROPERLY_ALIGNED | ${subsample}" 
-
-    samtools view -f 0x2 --threads $task.cpus -s \$PROPORTION ${bam} -b -o ${sample_name}_${subsample}_unsorted.bam  
-    samtools sort -l 6 -o ${sample_name}_${subsample}.bam -@ $task.cpus ${sample_name}_${subsample}_unsorted.bam
-    samtools index -@ $task.cpus ${sample_name}_${subsample}.bam
-
-    # sentieon util sort -i ${sample_name}_${subsample}_unsorted.bam -o ${sample_name}_${subsample}_sorted.bam
-    # sentieon util index ${sample_name}_${subsample}_sorted.bam
     
-    export SAMTOOLS_VER=\$(samtools --version 2>&1 |  sed -n -e '1p' | grep -Eo [0-9][.]*[0-9]*)
-    echo Samtools: \$SAMTOOLS_VER > custom_bam_subsample_version.yml
+    # Sort and index with optimal settings
+    samtools sort -@ $task.cpus -l 6 -o ${sample_name}_${subsample}.bam ${sample_name}_${subsample}_unsorted.bam
+    samtools index -@ $task.cpus ${sample_name}_${subsample}.bam
+    
+    # Clean up intermediate file
+    rm ${sample_name}_${subsample}_unsorted.bam
+    
+    # Generate version file
+    export SAMTOOLS_VER=\$(samtools --version 2>&1 | sed -n -e '1p' | grep -Eo '[0-9][.]*[0-9]*')
+    echo "Samtools: \$SAMTOOLS_VER" > custom_bam_subsample_version.yml
     """
 }
 
@@ -76,7 +88,7 @@ workflow{
                   .set{ ch_bam }
     } else if(params.input_csv != "") {
         ch_bam = Channel.fromPath( params.input_csv ).splitCsv( header:true )
-                                .map { row -> [ row.sampleId, row.bam, row.bam + ".bai"  ] }
+                                .map { row -> [ row.biosampleName, row.bam, row.bam + ".bai"  ] }
     }
     ch_bam.view()
     ch_bam.ifEmpty{ exit 1, "ERROR: No BAM files specified either via --bam or --input_csv" }
