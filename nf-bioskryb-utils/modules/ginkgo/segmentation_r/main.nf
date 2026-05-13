@@ -21,7 +21,7 @@ process GINKGO_SEGMENTATION_R {
 
     output:
     path("*ginkgo_res.binsize_${bin_size}.RDS"), emit: RDS
-    path("*.jpeg"), emit: jpeg
+    path("cnv_plots_binsize_${bin_size}.tar.gz"), emit: jpeg
     path("*SegCopy.binsize_${bin_size}.tsv"), emit: segcopy
 
     script:
@@ -58,6 +58,9 @@ process GINKGO_SEGMENTATION_R {
         mv "\${file}" cnv_binsize_${bin_size}_"\${file}"
         
     done
+    
+    # Compress all JPEG files into a tar.gz archive
+    tar -czf cnv_plots_binsize_${bin_size}.tar.gz cnv_binsize_${bin_size}_*.jpeg
     
     """
 }
